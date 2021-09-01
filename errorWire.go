@@ -42,7 +42,11 @@ func (ew *ErrorWire) Parse(record string) {
 	ew.tag = record[:6]
 	ew.ErrorCategory = ew.parseStringField(record[6:7])
 	ew.ErrorCode = ew.parseStringField(record[7:10])
-	ew.ErrorDescription = ew.parseStringField(record[10:45])
+
+	// A description of the error/intercept condition. In some error descriptions, the left and right curly braces will be used to denote
+	// Fedwire Funds tags. For example: H024=INVLD CYCLE DT/MISSING/INVLD {1520}
+	delim := strings.IndexByte(record, '*')
+	ew.ErrorDescription = ew.parseStringField(record[10:delim])
 }
 
 func (ew *ErrorWire) UnmarshalJSON(data []byte) error {
@@ -66,7 +70,7 @@ func (ew *ErrorWire) String() string {
 	buf.WriteString(ew.tag)
 	buf.WriteString(ew.ErrorCategoryField())
 	buf.WriteString(ew.ErrorCodeField())
-	buf.WriteString(ew.ErrorDescriptionField())
+	buf.WriteString(strings.TrimSpace(ew.ErrorDescriptionField()) + "*")
 	return buf.String()
 }
 

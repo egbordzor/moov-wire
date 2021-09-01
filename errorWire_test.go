@@ -26,7 +26,7 @@ func TestMockErrorWire(t *testing.T) {
 
 // TestParseErrorWire parses a known ErrorWire  record string
 func TestParseErrorWire(t *testing.T) {
-	var line = "{1130}1XYZData Error                         "
+	var line = "{1130}1XYZINVLD CYCLE DT/MISSING/INVLD {1520}*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
@@ -35,16 +35,20 @@ func TestParseErrorWire(t *testing.T) {
 
 	assert.Equal(t, "1", record.ErrorCategory)
 	assert.Equal(t, "XYZ", record.ErrorCode)
-	assert.Equal(t, "Data Error", record.ErrorDescription)
+	assert.Equal(t, "INVLD CYCLE DT/MISSING/INVLD {1520}", record.ErrorDescription)
+	assert.Equal(t, line, record.String())
 }
 
-// TestWriteErrorWire writes a ErrorWire record string
-func TestWriteErrorWire(t *testing.T) {
-	var line = "{1130}1XYZData Error                         "
+func TestParseErrorWireEmptyDescription(t *testing.T) {
+	var line = "{1130}1XYZ*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
+
 	require.NoError(t, r.parseErrorWire())
 	record := r.currentFEDWireMessage.ErrorWire
 
+	assert.Equal(t, "1", record.ErrorCategory)
+	assert.Equal(t, "XYZ", record.ErrorCode)
+	assert.Equal(t, "", record.ErrorDescription)
 	assert.Equal(t, line, record.String())
 }
