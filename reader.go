@@ -6,6 +6,7 @@ package wire
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"unicode/utf8"
@@ -47,10 +48,27 @@ func (r *Reader) parseError(err error) error {
 	}
 }
 
+func scanTags(data []byte, atEOF bool) (advance int, token []byte, err error) {
+	if atEOF && len(data) <= 1 {
+		return 0, nil, nil
+	}
+	if i := bytes.IndexByte(data[1:], '{'); i >= 0 {
+		return i + 1, data[0 : i+1], nil
+	}
+	// If we're at EOF, we have a final tag. Return it.
+	if atEOF {
+		return len(data), data, nil
+	}
+	// Request more data.
+	return 0, nil, nil
+}
+
 // NewReader returns a new ACH Reader that reads from r.
 func NewReader(r io.Reader) *Reader {
+	scanner := bufio.NewScanner(r)
+	scanner.Split(scanTags)
 	return &Reader{
-		scanner: bufio.NewScanner(r),
+		scanner: scanner,
 	}
 }
 

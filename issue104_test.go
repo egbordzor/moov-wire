@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"path/filepath"
-	"strings"
+	"regexp"
 	"testing"
 )
 
@@ -32,7 +32,8 @@ func TestIssue104(t *testing.T) {
 	}
 
 	// verify the output
-	lines := strings.Split(buf.String(), "\n")
+	reg := regexp.MustCompile(`\{\d+\}[^\{]+`)
+	lines := reg.Split(buf.String(), -1)
 	if n := len(lines); n != 27 {
 		t.Errorf("got %d lines", n)
 	}
