@@ -164,18 +164,18 @@ func TestLineOneRequired(t *testing.T) {
 
 // TestParseServiceMessageWrongLength parses a wrong ServiceMessage record length
 func TestParseServiceMessageWrongLength(t *testing.T) {
-	var line = "{9000}Line One                           Line Two                           Line Three                         Line Four                          Line Five                          Line Six                           Line Seven                         Line Eight                         Line Nine                          Line Ten                           Line Eleven                        line Twelve                      "
+	var line = "{9000}*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseServiceMessage()
 
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(426, len(r.line))).Error())
+	require.EqualError(t, err, "line:0 record:ServiceMessage wire.TagWrongLengthErr must be [8, 438] characters and found 7")
 }
 
 // TestParseServiceMessageReaderParseError parses a wrong ServiceMessage reader parse error
 func TestParseServiceMessageReaderParseError(t *testing.T) {
-	var line = "{9000}®ine One                           Line Two                           Line Three                         Line Four                          Line Five                          Line Six                           Line Seven                         Line Eight                         Line Nine                          Line Ten                           Line Eleven                        line Twelve                        "
+	var line = "{9000}®ine One*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
