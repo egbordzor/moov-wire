@@ -88,17 +88,17 @@ func TestFIAdditionalFIToFILineSixAlphaNumeric(t *testing.T) {
 
 // TestParseFIAdditionalFIToFIWrongLength parses a wrong FIAdditionalFIToFI record length
 func TestParseFIAdditionalFIToFIWrongLength(t *testing.T) {
-	var line = "{6500}Line One                           Line Two                           Line Three                         Line Four                          Line Five                          Line Six                         "
+	var line = "{6500}*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseFIAdditionalFIToFI()
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(216, len(r.line))).Error())
+	require.EqualError(t, err, "line:0 record:FIAdditionalFiToFi wire.TagWrongLengthErr must be [8, 222] characters and found 7")
 }
 
 // TestParseFIAdditionalFIToFIReaderParseError parses a wrong FIAdditionalFIToFI reader parse error
 func TestParseFIAdditionalFIToFIReaderParseError(t *testing.T) {
-	var line = "{6500}®ine One                           Line Two                           Line Three                         Line Four                          Line Five                          Line Six                           "
+	var line = "{6500}®ine One*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 

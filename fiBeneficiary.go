@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,16 +37,32 @@ func NewFIBeneficiary() *FIBeneficiary {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (fib *FIBeneficiary) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 201 {
-		return NewTagWrongLengthErr(201, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 8 || dataLen > 207 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [12, 207] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	fib.tag = record[:6]
-	fib.FIToFI.LineOne = fib.parseStringField(record[6:36])
-	fib.FIToFI.LineTwo = fib.parseStringField(record[36:69])
-	fib.FIToFI.LineThree = fib.parseStringField(record[69:102])
-	fib.FIToFI.LineFour = fib.parseStringField(record[102:135])
-	fib.FIToFI.LineFive = fib.parseStringField(record[135:168])
-	fib.FIToFI.LineSix = fib.parseStringField(record[168:201])
+
+	optionalFields := strings.Split(record[6:], "*")
+	fib.FIToFI.LineOne = fib.parseStringField(optionalFields[0])
+	if len(optionalFields) >= 2 {
+		fib.FIToFI.LineTwo = fib.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		fib.FIToFI.LineThree = fib.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		fib.FIToFI.LineFour = fib.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		fib.FIToFI.LineFive = fib.parseStringField(optionalFields[4])
+	}
+	if len(optionalFields) >= 6 {
+		fib.FIToFI.LineSix = fib.parseStringField(optionalFields[5])
+	}
 	return nil
 }
 
@@ -66,14 +83,14 @@ func (fib *FIBeneficiary) UnmarshalJSON(data []byte) error {
 // String writes FIBeneficiary
 func (fib *FIBeneficiary) String() string {
 	var buf strings.Builder
-	buf.Grow(201)
+	buf.Grow(207)
 	buf.WriteString(fib.tag)
-	buf.WriteString(fib.LineOneField())
-	buf.WriteString(fib.LineTwoField())
-	buf.WriteString(fib.LineThreeField())
-	buf.WriteString(fib.LineFourField())
-	buf.WriteString(fib.LineFiveField())
-	buf.WriteString(fib.LineSixField())
+	buf.WriteString(strings.TrimSpace(fib.LineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(fib.LineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(fib.LineThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(fib.LineFourField()) + "*")
+	buf.WriteString(strings.TrimSpace(fib.LineFiveField()) + "*")
+	buf.WriteString(strings.TrimSpace(fib.LineSixField()) + "*")
 	return buf.String()
 }
 

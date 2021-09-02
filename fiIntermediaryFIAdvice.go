@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,17 +37,33 @@ func NewFIIntermediaryFIAdvice() *FIIntermediaryFIAdvice {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (fiifia *FIIntermediaryFIAdvice) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 200 {
-		return NewTagWrongLengthErr(200, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 10 || dataLen > 206 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [10, 206] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	fiifia.tag = record[:6]
 	fiifia.Advice.AdviceCode = fiifia.parseStringField(record[6:9])
-	fiifia.Advice.LineOne = fiifia.parseStringField(record[9:35])
-	fiifia.Advice.LineTwo = fiifia.parseStringField(record[35:68])
-	fiifia.Advice.LineThree = fiifia.parseStringField(record[68:101])
-	fiifia.Advice.LineFour = fiifia.parseStringField(record[101:134])
-	fiifia.Advice.LineFive = fiifia.parseStringField(record[134:167])
-	fiifia.Advice.LineSix = fiifia.parseStringField(record[167:200])
+
+	optionalFields := strings.Split(record[9:], "*")
+	fiifia.Advice.LineOne = fiifia.parseStringField(optionalFields[0])
+	if len(optionalFields) >= 2 {
+		fiifia.Advice.LineTwo = fiifia.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		fiifia.Advice.LineThree = fiifia.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		fiifia.Advice.LineFour = fiifia.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		fiifia.Advice.LineFive = fiifia.parseStringField(optionalFields[4])
+	}
+	if len(optionalFields) >= 6 {
+		fiifia.Advice.LineSix = fiifia.parseStringField(optionalFields[5])
+	}
 	return nil
 }
 
@@ -70,12 +87,12 @@ func (fiifia *FIIntermediaryFIAdvice) String() string {
 	buf.Grow(200)
 	buf.WriteString(fiifia.tag)
 	buf.WriteString(fiifia.AdviceCodeField())
-	buf.WriteString(fiifia.LineOneField())
-	buf.WriteString(fiifia.LineTwoField())
-	buf.WriteString(fiifia.LineThreeField())
-	buf.WriteString(fiifia.LineFourField())
-	buf.WriteString(fiifia.LineFiveField())
-	buf.WriteString(fiifia.LineSixField())
+	buf.WriteString(strings.TrimSpace(fiifia.LineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(fiifia.LineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(fiifia.LineThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(fiifia.LineFourField()) + "*")
+	buf.WriteString(strings.TrimSpace(fiifia.LineFiveField()) + "*")
+	buf.WriteString(strings.TrimSpace(fiifia.LineSixField()) + "*")
 	return buf.String()
 }
 
