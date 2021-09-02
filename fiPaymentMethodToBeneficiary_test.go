@@ -44,17 +44,17 @@ func TestAdditionalInformationAlphaNumeric(t *testing.T) {
 
 // TestParseFIPaymentMethodToBeneficiaryWrongLength parses a wrong FIPaymentMethodToBeneficiary record length
 func TestParseFIPaymentMethodToBeneficiaryWrongLength(t *testing.T) {
-	var line = "{6420}CHECKAdditional Information      "
+	var line = "{6420}CHECK"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseFIPaymentMethodToBeneficiary()
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(41, len(r.line))).Error())
+	require.EqualError(t, err, "line:0 record:FIPaymentMethodToBeneficiary wire.TagWrongLengthErr must be [12, 42] characters and found 11")
 }
 
 // TestParseFIPaymentMethodToBeneficiaryReaderParseError parses a wrong FIPaymentMethodToBeneficiary reader parse error
 func TestParseFIPaymentMethodToBeneficiaryReaderParseError(t *testing.T) {
-	var line = "{6420}CHECK®dditional Information        "
+	var line = "{6420}CHECK®dditional Information        *"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 

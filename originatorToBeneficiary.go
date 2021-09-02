@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -42,14 +43,20 @@ func NewOriginatorToBeneficiary() *OriginatorToBeneficiary {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (ob *OriginatorToBeneficiary) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 146 {
-		return NewTagWrongLengthErr(146, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 11 || dataLen > 150 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [11, 150] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	ob.tag = record[:6]
-	ob.LineOne = ob.parseStringField(record[6:41])
-	ob.LineTwo = ob.parseStringField(record[41:76])
-	ob.LineThree = ob.parseStringField(record[76:111])
-	ob.LineFour = ob.parseStringField(record[111:146])
+
+	optionalFields := strings.Split(record[6:], "*")
+	ob.LineOne = ob.parseStringField(optionalFields[0])
+	ob.LineTwo = ob.parseStringField(optionalFields[1])
+	ob.LineThree = ob.parseStringField(optionalFields[2])
+	ob.LineFour = ob.parseStringField(optionalFields[3])
 	return nil
 }
 
@@ -72,10 +79,10 @@ func (ob *OriginatorToBeneficiary) String() string {
 	var buf strings.Builder
 	buf.Grow(146)
 	buf.WriteString(ob.tag)
-	buf.WriteString(ob.LineOneField())
-	buf.WriteString(ob.LineTwoField())
-	buf.WriteString(ob.LineThreeField())
-	buf.WriteString(ob.LineFourField())
+	buf.WriteString(strings.TrimSpace(ob.LineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(ob.LineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(ob.LineThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(ob.LineFourField()) + "*")
 	return buf.String()
 }
 

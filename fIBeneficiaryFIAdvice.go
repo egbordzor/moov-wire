@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,17 +37,33 @@ func NewFIBeneficiaryFIAdvice() *FIBeneficiaryFIAdvice {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (fibfia *FIBeneficiaryFIAdvice) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 200 {
-		return NewTagWrongLengthErr(200, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 10 || dataLen > 206 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [10, 206] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	fibfia.tag = record[:6]
 	fibfia.Advice.AdviceCode = fibfia.parseStringField(record[6:9])
-	fibfia.Advice.LineOne = fibfia.parseStringField(record[9:35])
-	fibfia.Advice.LineTwo = fibfia.parseStringField(record[35:68])
-	fibfia.Advice.LineThree = fibfia.parseStringField(record[68:101])
-	fibfia.Advice.LineFour = fibfia.parseStringField(record[101:134])
-	fibfia.Advice.LineFive = fibfia.parseStringField(record[134:167])
-	fibfia.Advice.LineSix = fibfia.parseStringField(record[167:200])
+
+	optionalFields := strings.Split(record[9:], "*")
+	fibfia.Advice.LineOne = fibfia.parseStringField(optionalFields[0])
+	if len(optionalFields) >= 2 {
+		fibfia.Advice.LineTwo = fibfia.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		fibfia.Advice.LineThree = fibfia.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		fibfia.Advice.LineFour = fibfia.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		fibfia.Advice.LineFive = fibfia.parseStringField(optionalFields[4])
+	}
+	if len(optionalFields) >= 6 {
+		fibfia.Advice.LineSix = fibfia.parseStringField(optionalFields[5])
+	}
 	return nil
 }
 
@@ -67,15 +84,15 @@ func (fibfia *FIBeneficiaryFIAdvice) UnmarshalJSON(data []byte) error {
 // String writes FIBeneficiaryFIAdvice
 func (fibfia *FIBeneficiaryFIAdvice) String() string {
 	var buf strings.Builder
-	buf.Grow(200)
+	buf.Grow(206)
 	buf.WriteString(fibfia.tag)
 	buf.WriteString(fibfia.AdviceCodeField())
-	buf.WriteString(fibfia.LineOneField())
-	buf.WriteString(fibfia.LineTwoField())
-	buf.WriteString(fibfia.LineThreeField())
-	buf.WriteString(fibfia.LineFourField())
-	buf.WriteString(fibfia.LineFiveField())
-	buf.WriteString(fibfia.LineSixField())
+	buf.WriteString(strings.TrimSpace(fibfia.LineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(fibfia.LineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(fibfia.LineThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(fibfia.LineFourField()) + "*")
+	buf.WriteString(strings.TrimSpace(fibfia.LineFiveField()) + "*")
+	buf.WriteString(strings.TrimSpace(fibfia.LineSixField()) + "*")
 	return buf.String()
 }
 

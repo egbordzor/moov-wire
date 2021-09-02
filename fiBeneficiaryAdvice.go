@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,17 +37,33 @@ func NewFIBeneficiaryAdvice() *FIBeneficiaryAdvice {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (fiba *FIBeneficiaryAdvice) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 200 {
-		return NewTagWrongLengthErr(200, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 10 || dataLen > 206 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [10, 206] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	fiba.tag = record[:6]
 	fiba.Advice.AdviceCode = fiba.parseStringField(record[6:9])
-	fiba.Advice.LineOne = fiba.parseStringField(record[9:35])
-	fiba.Advice.LineTwo = fiba.parseStringField(record[35:68])
-	fiba.Advice.LineThree = fiba.parseStringField(record[68:101])
-	fiba.Advice.LineFour = fiba.parseStringField(record[101:134])
-	fiba.Advice.LineFive = fiba.parseStringField(record[134:167])
-	fiba.Advice.LineSix = fiba.parseStringField(record[167:200])
+
+	optionalFields := strings.Split(record[9:], "*")
+	fiba.Advice.LineOne = fiba.parseStringField(optionalFields[0])
+	if len(optionalFields) >= 2 {
+		fiba.Advice.LineTwo = fiba.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		fiba.Advice.LineThree = fiba.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		fiba.Advice.LineFour = fiba.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		fiba.Advice.LineFive = fiba.parseStringField(optionalFields[4])
+	}
+	if len(optionalFields) >= 6 {
+		fiba.Advice.LineSix = fiba.parseStringField(optionalFields[5])
+	}
 	return nil
 }
 
@@ -70,12 +87,12 @@ func (fiba *FIBeneficiaryAdvice) String() string {
 	buf.Grow(200)
 	buf.WriteString(fiba.tag)
 	buf.WriteString(fiba.AdviceCodeField())
-	buf.WriteString(fiba.LineOneField())
-	buf.WriteString(fiba.LineTwoField())
-	buf.WriteString(fiba.LineThreeField())
-	buf.WriteString(fiba.LineFourField())
-	buf.WriteString(fiba.LineFiveField())
-	buf.WriteString(fiba.LineSixField())
+	buf.WriteString(strings.TrimSpace(fiba.LineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(fiba.LineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(fiba.LineThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(fiba.LineFourField()) + "*")
+	buf.WriteString(strings.TrimSpace(fiba.LineFiveField()) + "*")
+	buf.WriteString(strings.TrimSpace(fiba.LineSixField()) + "*")
 	return buf.String()
 }
 
