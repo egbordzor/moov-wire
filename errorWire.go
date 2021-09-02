@@ -45,8 +45,9 @@ func (ew *ErrorWire) Parse(record string) {
 
 	// A description of the error/intercept condition. In some error descriptions, the left and right curly braces will be used to denote
 	// Fedwire Funds tags. For example: H024=INVLD CYCLE DT/MISSING/INVLD {1520}
-	delim := strings.IndexByte(record, '*')
-	ew.ErrorDescription = ew.parseStringField(record[10:delim])
+	if delim := strings.IndexByte(record, '*'); delim > 0 {
+		ew.ErrorDescription = ew.parseStringField(record[10:delim])
+	}
 }
 
 func (ew *ErrorWire) UnmarshalJSON(data []byte) error {
