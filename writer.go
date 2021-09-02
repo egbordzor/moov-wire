@@ -148,12 +148,22 @@ func (w *Writer) writeMandatory(fwm FEDWireMessage) error {
 	} else {
 		return fieldError("SenderDepositoryInstitution", ErrFieldRequired)
 	}
+	if fwm.SenderReference != nil {
+		if _, err := w.w.WriteString(fwm.SenderReference.String()); err != nil {
+			return err
+		}
+	}
 	if fwm.ReceiverDepositoryInstitution != nil {
 		if _, err := w.w.WriteString(fwm.ReceiverDepositoryInstitution.String()); err != nil {
 			return err
 		}
 	} else {
 		return fieldError("ReceiverDepositoryInstitution", ErrFieldRequired)
+	}
+	if fwm.PreviousMessageIdentifier != nil {
+		if _, err := w.w.WriteString(fwm.PreviousMessageIdentifier.String()); err != nil {
+			return err
+		}
 	}
 	if fwm.BusinessFunctionCode != nil {
 		if _, err := w.w.WriteString(fwm.BusinessFunctionCode.String()); err != nil {
@@ -166,16 +176,6 @@ func (w *Writer) writeMandatory(fwm FEDWireMessage) error {
 }
 
 func (w *Writer) writeOtherTransferInfo(fwm FEDWireMessage) error {
-	if fwm.SenderReference != nil {
-		if _, err := w.w.WriteString(fwm.SenderReference.String()); err != nil {
-			return err
-		}
-	}
-	if fwm.PreviousMessageIdentifier != nil {
-		if _, err := w.w.WriteString(fwm.PreviousMessageIdentifier.String()); err != nil {
-			return err
-		}
-	}
 	if fwm.LocalInstrument != nil {
 		if _, err := w.w.WriteString(fwm.LocalInstrument.String()); err != nil {
 			return err

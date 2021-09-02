@@ -118,18 +118,18 @@ func TestBeneficiaryIntermediaryFIIdentifierRequired(t *testing.T) {
 
 // TestParseBeneficiaryIntermediaryFIWrongLength parses a wrong BeneficiaryIntermediaryFI record length
 func TestParseBeneficiaryIntermediaryFIWrongLength(t *testing.T) {
-	var line = "{4000}D123456789                         FI Name                            Address One                        Address Two                        Address Three                    "
+	var line = "{4000}D"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseBeneficiaryIntermediaryFI()
 
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(181, len(r.line))).Error())
+	require.EqualError(t, err, "line:0 record:BeneficiaryIntermediaryFI wire.TagWrongLengthErr must be [12, 186] characters and found 7")
 }
 
 // TestParseBeneficiaryIntermediaryFIReaderParseError parses a wrong BeneficiaryIntermediaryFI reader parse error
 func TestParseBeneficiaryIntermediaryFIReaderParseError(t *testing.T) {
-	var line = "{4000}D123456789                         F® Name                            Address One                        Address Two                        Address Three                      "
+	var line = "{4000}D123456789                         *F® Name                            *Address One                        *Address Two                        *Address Three                      *"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 	fwm := new(FEDWireMessage)

@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -41,16 +42,22 @@ func NewAccountDebitedDrawdown() *AccountDebitedDrawdown {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (debitDD *AccountDebitedDrawdown) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 181 {
-		return NewTagWrongLengthErr(181, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 14 || dataLen > 186 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [14, 186] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	debitDD.tag = record[:6]
 	debitDD.IdentificationCode = debitDD.parseStringField(record[6:7])
-	debitDD.Identifier = debitDD.parseStringField(record[7:41])
-	debitDD.Name = debitDD.parseStringField(record[41:76])
-	debitDD.Address.AddressLineOne = debitDD.parseStringField(record[76:111])
-	debitDD.Address.AddressLineTwo = debitDD.parseStringField(record[111:146])
-	debitDD.Address.AddressLineThree = debitDD.parseStringField(record[146:181])
+
+	optionalFields := strings.Split(record[7:], "*")
+	debitDD.Identifier = debitDD.parseStringField(optionalFields[0])
+	debitDD.Name = debitDD.parseStringField(optionalFields[1])
+	debitDD.Address.AddressLineOne = debitDD.parseStringField(optionalFields[2])
+	debitDD.Address.AddressLineTwo = debitDD.parseStringField(optionalFields[3])
+	debitDD.Address.AddressLineThree = debitDD.parseStringField(optionalFields[4])
 	return nil
 }
 
@@ -74,11 +81,11 @@ func (debitDD *AccountDebitedDrawdown) String() string {
 	buf.Grow(181)
 	buf.WriteString(debitDD.tag)
 	buf.WriteString(debitDD.IdentificationCodeField())
-	buf.WriteString(debitDD.IdentifierField())
-	buf.WriteString(debitDD.NameField())
-	buf.WriteString(debitDD.AddressLineOneField())
-	buf.WriteString(debitDD.AddressLineTwoField())
-	buf.WriteString(debitDD.AddressLineThreeField())
+	buf.WriteString(strings.TrimSpace(debitDD.IdentifierField()) + "*")
+	buf.WriteString(strings.TrimSpace(debitDD.NameField()) + "*")
+	buf.WriteString(strings.TrimSpace(debitDD.AddressLineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(debitDD.AddressLineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(debitDD.AddressLineThreeField()) + "*")
 	return buf.String()
 }
 

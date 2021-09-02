@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,16 +37,22 @@ func NewBeneficiaryFI() *BeneficiaryFI {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (bfi *BeneficiaryFI) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 181 {
-		return NewTagWrongLengthErr(181, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 12 || dataLen > 186 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [12, 186] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	bfi.tag = record[:6]
 	bfi.FinancialInstitution.IdentificationCode = bfi.parseStringField(record[6:7])
-	bfi.FinancialInstitution.Identifier = bfi.parseStringField(record[7:41])
-	bfi.FinancialInstitution.Name = bfi.parseStringField(record[41:76])
-	bfi.FinancialInstitution.Address.AddressLineOne = bfi.parseStringField(record[76:111])
-	bfi.FinancialInstitution.Address.AddressLineTwo = bfi.parseStringField(record[111:146])
-	bfi.FinancialInstitution.Address.AddressLineThree = bfi.parseStringField(record[146:181])
+
+	optionalFields := strings.Split(record[7:], "*")
+	bfi.FinancialInstitution.Identifier = bfi.parseStringField(optionalFields[0])
+	bfi.FinancialInstitution.Name = bfi.parseStringField(optionalFields[1])
+	bfi.FinancialInstitution.Address.AddressLineOne = bfi.parseStringField(optionalFields[2])
+	bfi.FinancialInstitution.Address.AddressLineTwo = bfi.parseStringField(optionalFields[3])
+	bfi.FinancialInstitution.Address.AddressLineThree = bfi.parseStringField(optionalFields[4])
 	return nil
 }
 
@@ -66,14 +73,14 @@ func (bfi *BeneficiaryFI) UnmarshalJSON(data []byte) error {
 // String writes BeneficiaryFI
 func (bfi *BeneficiaryFI) String() string {
 	var buf strings.Builder
-	buf.Grow(181)
+	buf.Grow(186)
 	buf.WriteString(bfi.tag)
 	buf.WriteString(bfi.IdentificationCodeField())
-	buf.WriteString(bfi.IdentifierField())
-	buf.WriteString(bfi.NameField())
-	buf.WriteString(bfi.AddressLineOneField())
-	buf.WriteString(bfi.AddressLineTwoField())
-	buf.WriteString(bfi.AddressLineThreeField())
+	buf.WriteString(strings.TrimSpace(bfi.IdentifierField()) + "*")
+	buf.WriteString(strings.TrimSpace(bfi.NameField()) + "*")
+	buf.WriteString(strings.TrimSpace(bfi.AddressLineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(bfi.AddressLineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(bfi.AddressLineThreeField()) + "*")
 	return buf.String()
 }
 
