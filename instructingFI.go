@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,16 +37,22 @@ func NewInstructingFI() *InstructingFI {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (ifi *InstructingFI) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 181 {
-		return NewTagWrongLengthErr(181, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 12 || dataLen > 186 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [12, 186] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	ifi.tag = record[:6]
 	ifi.FinancialInstitution.IdentificationCode = ifi.parseStringField(record[6:7])
-	ifi.FinancialInstitution.Identifier = ifi.parseStringField(record[7:41])
-	ifi.FinancialInstitution.Name = ifi.parseStringField(record[41:76])
-	ifi.FinancialInstitution.Address.AddressLineOne = ifi.parseStringField(record[76:111])
-	ifi.FinancialInstitution.Address.AddressLineTwo = ifi.parseStringField(record[111:146])
-	ifi.FinancialInstitution.Address.AddressLineThree = ifi.parseStringField(record[146:181])
+
+	optionalFields := strings.Split(record[7:], "*")
+	ifi.FinancialInstitution.Identifier = ifi.parseStringField(optionalFields[0])
+	ifi.FinancialInstitution.Name = ifi.parseStringField(optionalFields[1])
+	ifi.FinancialInstitution.Address.AddressLineOne = ifi.parseStringField(optionalFields[2])
+	ifi.FinancialInstitution.Address.AddressLineTwo = ifi.parseStringField(optionalFields[3])
+	ifi.FinancialInstitution.Address.AddressLineThree = ifi.parseStringField(optionalFields[4])
 	return nil
 }
 
@@ -66,14 +73,14 @@ func (ifi *InstructingFI) UnmarshalJSON(data []byte) error {
 // String writes InstructingFI
 func (ifi *InstructingFI) String() string {
 	var buf strings.Builder
-	buf.Grow(181)
+	buf.Grow(186)
 	buf.WriteString(ifi.tag)
 	buf.WriteString(ifi.IdentificationCodeField())
-	buf.WriteString(ifi.IdentifierField())
-	buf.WriteString(ifi.NameField())
-	buf.WriteString(ifi.AddressLineOneField())
-	buf.WriteString(ifi.AddressLineTwoField())
-	buf.WriteString(ifi.AddressLineThreeField())
+	buf.WriteString(strings.TrimSpace(ifi.IdentifierField()) + "*")
+	buf.WriteString(strings.TrimSpace(ifi.NameField()) + "*")
+	buf.WriteString(strings.TrimSpace(ifi.AddressLineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(ifi.AddressLineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(ifi.AddressLineThreeField()) + "*")
 	return buf.String()
 }
 

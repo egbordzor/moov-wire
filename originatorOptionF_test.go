@@ -150,18 +150,18 @@ func TestOriginatorOptionFLineThree(t *testing.T) {
 
 // TestParseOriginatorOptionFWrongLength parses a wrong OriginatorOptionF record length
 func TestParseOriginatorOptionFWrongLength(t *testing.T) {
-	var line = "{5010}TXID/123-45-6789                   Name                               LineOne                            LineTwo                            LineThree                        "
+	var line = "{5010}"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseOriginatorOptionF()
 
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(181, len(r.line))).Error())
+	require.EqualError(t, err, "line:0 record:OriginatorOptionF wire.TagWrongLengthErr must be [13, 186] characters and found 6")
 }
 
 // TestParseOriginatorOptionFReaderParseError parses a wrong OriginatorOptionF reader parse error
 func TestParseOriginatorOptionFReaderParseError(t *testing.T) {
-	var line = "{5010}TXID/123-45-6789                   ®ame                               LineOne                            LineTwo                            LineThree                          "
+	var line = "{5010}TXID/123-45-6789                   *®ame                               *LineOne                            *LineTwo                            *LineThree                          *"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 

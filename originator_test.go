@@ -111,18 +111,18 @@ func TestOriginatorIdentifierRequired(t *testing.T) {
 
 // TestParseOriginatorWrongLength parses a wrong Originator record length
 func TestParseOriginatorWrongLength(t *testing.T) {
-	var line = "{5000}11234                              Name                               Address One                        Address Two                        Address Three                    "
+	var line = "{5000}"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseOriginator()
 
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(181, len(r.line))).Error())
+	require.EqualError(t, err, "line:0 record:Originator wire.TagWrongLengthErr must be [12, 186] characters and found 6")
 }
 
 // TestParseOriginatorReaderParseError parses a wrong Originator reader parse error
 func TestParseOriginatorReaderParseError(t *testing.T) {
-	var line = "{5000}11234                              ®ame                               Address One                        Address Two                        Address Three                      "
+	var line = "{5000}11234                              *®ame                               *Address One                        *Address Two                        *Address Three                      *"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 

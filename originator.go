@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,15 +37,22 @@ func NewOriginator() *Originator {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (o *Originator) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 181 {
-		return NewTagWrongLengthErr(181, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 12 || dataLen > 186 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [12, 186] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	o.tag = record[:6]
 	o.Personal.IdentificationCode = o.parseStringField(record[6:7])
-	o.Personal.Identifier = o.parseStringField(record[7:41])
-	o.Personal.Name = o.parseStringField(record[41:76])
-	o.Personal.Address.AddressLineOne = o.parseStringField(record[76:111])
-	o.Personal.Address.AddressLineThree = o.parseStringField(record[146:181])
+
+	optionalFields := strings.Split(record[7:], "*")
+	o.Personal.Identifier = o.parseStringField(optionalFields[0])
+	o.Personal.Name = o.parseStringField(optionalFields[1])
+	o.Personal.Address.AddressLineOne = o.parseStringField(optionalFields[2])
+	o.Personal.Address.AddressLineTwo = o.parseStringField(optionalFields[3])
+	o.Personal.Address.AddressLineThree = o.parseStringField(optionalFields[4])
 	return nil
 }
 
@@ -68,11 +76,11 @@ func (o *Originator) String() string {
 	buf.Grow(181)
 	buf.WriteString(o.tag)
 	buf.WriteString(o.IdentificationCodeField())
-	buf.WriteString(o.IdentifierField())
-	buf.WriteString(o.NameField())
-	buf.WriteString(o.AddressLineOneField())
-	buf.WriteString(o.AddressLineTwoField())
-	buf.WriteString(o.AddressLineThreeField())
+	buf.WriteString(strings.TrimSpace(o.IdentifierField()) + "*")
+	buf.WriteString(strings.TrimSpace(o.NameField()) + "*")
+	buf.WriteString(strings.TrimSpace(o.AddressLineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(o.AddressLineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(o.AddressLineThreeField()) + "*")
 	return buf.String()
 }
 
