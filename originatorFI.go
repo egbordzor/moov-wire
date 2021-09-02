@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,16 +37,22 @@ func NewOriginatorFI() *OriginatorFI {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (ofi *OriginatorFI) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 181 {
-		return NewTagWrongLengthErr(181, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 12 || dataLen > 186 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [12, 186] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	ofi.tag = record[:6]
 	ofi.FinancialInstitution.IdentificationCode = ofi.parseStringField(record[6:7])
-	ofi.FinancialInstitution.Identifier = ofi.parseStringField(record[7:41])
-	ofi.FinancialInstitution.Name = ofi.parseStringField(record[41:76])
-	ofi.FinancialInstitution.Address.AddressLineOne = ofi.parseStringField(record[76:111])
-	ofi.FinancialInstitution.Address.AddressLineTwo = ofi.parseStringField(record[111:146])
-	ofi.FinancialInstitution.Address.AddressLineThree = ofi.parseStringField(record[146:181])
+
+	optionalFields := strings.Split(record[7:], "*")
+	ofi.FinancialInstitution.Identifier = ofi.parseStringField(optionalFields[0])
+	ofi.FinancialInstitution.Name = ofi.parseStringField(optionalFields[1])
+	ofi.FinancialInstitution.Address.AddressLineOne = ofi.parseStringField(optionalFields[2])
+	ofi.FinancialInstitution.Address.AddressLineTwo = ofi.parseStringField(optionalFields[3])
+	ofi.FinancialInstitution.Address.AddressLineThree = ofi.parseStringField(optionalFields[4])
 	return nil
 }
 
@@ -66,14 +73,14 @@ func (ofi *OriginatorFI) UnmarshalJSON(data []byte) error {
 // String writes OriginatorFI
 func (ofi *OriginatorFI) String() string {
 	var buf strings.Builder
-	buf.Grow(181)
+	buf.Grow(186)
 	buf.WriteString(ofi.tag)
 	buf.WriteString(ofi.IdentificationCodeField())
-	buf.WriteString(ofi.IdentifierField())
-	buf.WriteString(ofi.NameField())
-	buf.WriteString(ofi.AddressLineOneField())
-	buf.WriteString(ofi.AddressLineTwoField())
-	buf.WriteString(ofi.AddressLineThreeField())
+	buf.WriteString(strings.TrimSpace(ofi.IdentifierField()) + "*")
+	buf.WriteString(strings.TrimSpace(ofi.NameField()) + "*")
+	buf.WriteString(strings.TrimSpace(ofi.AddressLineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(ofi.AddressLineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(ofi.AddressLineThreeField()) + "*")
 	return buf.String()
 }
 
