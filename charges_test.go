@@ -34,10 +34,12 @@ func TestPaymentNotificationIndicatorValid(t *testing.T) {
 	require.EqualError(t, err, fieldError("ChargeDetails", ErrChargeDetails, c.ChargeDetails).Error())
 }
 
-func TestChargesCrash(t *testing.T) {
+func TestChargesEmpty(t *testing.T) {
 	c := &Charges{}
-	c.Parse("{3700}") // invalid, caused a fuzz crash
-
-	require.Empty(t, c.tag)
-	require.Empty(t, c.ChargeDetails)
+	c.Parse("{3700}B****") // invalid, caused a fuzz crash
+	require.Equal(t, "B", c.ChargeDetails)
+	require.Empty(t, c.SendersChargesOne)
+	require.Empty(t, c.SendersChargesTwo)
+	require.Empty(t, c.SendersChargesThree)
+	require.Empty(t, c.SendersChargesFour)
 }

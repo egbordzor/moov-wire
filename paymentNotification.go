@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -50,17 +51,23 @@ func NewPaymentNotification() *PaymentNotification {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (pn *PaymentNotification) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 2335 {
-		return NewTagWrongLengthErr(2335, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 13 || dataLen > 2341 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [13, 2341] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	pn.tag = record[:6]
 	pn.PaymentNotificationIndicator = pn.parseStringField(record[6:7])
-	pn.ContactNotificationElectronicAddress = pn.parseStringField(record[7:2055])
-	pn.ContactName = pn.parseStringField(record[2055:2195])
-	pn.ContactPhoneNumber = pn.parseStringField(record[2195:2230])
-	pn.ContactMobileNumber = pn.parseStringField(record[2230:2265])
-	pn.ContactFaxNumber = pn.parseStringField(record[2265:2300])
-	pn.EndToEndIdentification = pn.parseStringField(record[2300:2335])
+
+	optionalFields := strings.Split(record[7:], "*")
+	pn.ContactNotificationElectronicAddress = pn.parseStringField(optionalFields[0])
+	pn.ContactName = pn.parseStringField(optionalFields[1])
+	pn.ContactPhoneNumber = pn.parseStringField(optionalFields[2])
+	pn.ContactMobileNumber = pn.parseStringField(optionalFields[3])
+	pn.ContactFaxNumber = pn.parseStringField(optionalFields[4])
+	pn.EndToEndIdentification = pn.parseStringField(optionalFields[5])
 	return nil
 }
 
@@ -84,12 +91,12 @@ func (pn *PaymentNotification) String() string {
 	buf.Grow(2335)
 	buf.WriteString(pn.tag)
 	buf.WriteString(pn.PaymentNotificationIndicatorField())
-	buf.WriteString(pn.ContactNotificationElectronicAddressField())
-	buf.WriteString(pn.ContactNameField())
-	buf.WriteString(pn.ContactPhoneNumberField())
-	buf.WriteString(pn.ContactMobileNumberField())
-	buf.WriteString(pn.ContactFaxNumberField())
-	buf.WriteString(pn.EndToEndIdentificationField())
+	buf.WriteString(strings.TrimSpace(pn.ContactNotificationElectronicAddressField()) + "*")
+	buf.WriteString(strings.TrimSpace(pn.ContactNameField()) + "*")
+	buf.WriteString(strings.TrimSpace(pn.ContactPhoneNumberField()) + "*")
+	buf.WriteString(strings.TrimSpace(pn.ContactMobileNumberField()) + "*")
+	buf.WriteString(strings.TrimSpace(pn.ContactFaxNumberField()) + "*")
+	buf.WriteString(strings.TrimSpace(pn.EndToEndIdentificationField()) + "*")
 	return buf.String()
 }
 
