@@ -6,9 +6,9 @@ package wire
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"io"
+	"regexp"
 	"unicode/utf8"
 
 	"github.com/moov-io/base"
@@ -49,11 +49,12 @@ func (r *Reader) parseError(err error) error {
 }
 
 func scanTags(data []byte, atEOF bool) (advance int, token []byte, err error) {
-	if atEOF && len(data) <= 1 {
+	if atEOF && len(data) == 0 {
 		return 0, nil, nil
 	}
-	if i := bytes.IndexByte(data[1:], '{'); i >= 0 {
-		return i + 1, data[0 : i+1], nil
+	re := regexp.MustCompile(`[^^]\{\d{4}\}[^\*]`)
+	if loc := re.FindIndex(data); loc != nil {
+		return loc[0] + 1, data[0 : loc[0]+1], nil
 	}
 	// If we're at EOF, we have a final tag. Return it.
 	if atEOF {
