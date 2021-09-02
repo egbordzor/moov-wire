@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -38,12 +39,19 @@ func NewBusinessFunctionCode() *BusinessFunctionCode {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (bfc *BusinessFunctionCode) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 12 {
-		return NewTagWrongLengthErr(12, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 9 || dataLen > 13 {
+		return TagWrongLengthErr{
+			Message:   fmt.Sprintf("must be [9, 13] characters and found %d", dataLen),
+			TagLength: 13,
+			Length:    dataLen,
+		}
 	}
 	bfc.tag = record[:6]
 	bfc.BusinessFunctionCode = bfc.parseStringField(record[6:9])
-	bfc.TransactionTypeCode = record[9:12]
+	if delim := strings.IndexByte(record, '*'); delim > 0 {
+		bfc.TransactionTypeCode = bfc.parseStringField(record[9:delim])
+	}
 	return nil
 }
 
@@ -67,7 +75,9 @@ func (bfc *BusinessFunctionCode) String() string {
 	buf.Grow(12)
 	buf.WriteString(bfc.tag)
 	buf.WriteString(bfc.BusinessFunctionCodeField())
-	buf.WriteString(bfc.TransactionTypeCodeField())
+	if bfc.TransactionTypeCode != "" {
+		buf.WriteString(strings.TrimSpace(bfc.TransactionTypeCodeField()) + "*")
+	}
 	return buf.String()
 }
 

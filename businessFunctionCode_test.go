@@ -11,7 +11,6 @@ import (
 func mockBusinessFunctionCode() *BusinessFunctionCode {
 	bfc := NewBusinessFunctionCode()
 	bfc.BusinessFunctionCode = CustomerTransfer
-	bfc.TransactionTypeCode = "   "
 	return bfc
 }
 
@@ -50,12 +49,12 @@ func TestParseBusinessFunctionCodeWrongLength(t *testing.T) {
 
 	err := r.parseBusinessFunctionCode()
 
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(12, len(r.line))).Error())
+	require.EqualError(t, err, "line:0 record:BusinessFunctionCode wire.TagWrongLengthErr must be [9, 13] characters and found 8")
 }
 
 // TestParseBusinessFunctionCodeReaderParseError parses a wrong BusinessFunctionCode reader parse error
 func TestParseBusinessFunctionCodeReaderParseError(t *testing.T) {
-	var line = "{3600}CTAXXY"
+	var line = "{3600}CTAXXY*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 

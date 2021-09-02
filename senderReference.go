@@ -47,7 +47,7 @@ func (sr *SenderReference) Parse(record string) error {
 	}
 	sr.tag = record[:6]
 	if delim := strings.IndexByte(record, '*'); delim > 0 {
-		sr.SenderReference = record[6:delim]
+		sr.SenderReference = sr.parseStringField(record[6:delim])
 	}
 	return nil
 }

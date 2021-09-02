@@ -55,13 +55,13 @@ func TestProprietaryCodeAlphaNumeric(t *testing.T) {
 
 // TestParseLocalInstrumentWrongLength parses a wrong LocalInstrumente record length
 func TestParseLocalInstrumentWrongLength(t *testing.T) {
-	var line = "{3610}ANSI                                 "
+	var line = "{3610}ANS"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseLocalInstrument()
 
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(45, len(r.line))).Error())
+	require.EqualError(t, err, "line:0 record:LocalInstrument wire.TagWrongLengthErr must be [10, 46] characters and found 9")
 }
 
 // TestParseLocalInstrumentReaderParseError parses a wrong LocalInstrumente reader parse error

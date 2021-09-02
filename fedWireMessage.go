@@ -4,7 +4,9 @@
 
 package wire
 
-import "strings"
+import (
+	"strings"
+)
 
 // FEDWireMessage is a FedWire Message
 type FEDWireMessage struct {
