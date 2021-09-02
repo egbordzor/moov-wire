@@ -44,24 +44,21 @@ func TestCurrencyInstructedAmountValid(t *testing.T) {
 
 // TestParseCurrencyInstructedAmountWrongLength parses a wrong CurrencyInstructedAmount record length
 func TestParseCurrencyInstructedAmountWrongLength(t *testing.T) {
-	var line = "{7033}Swift000000000001500,4"
+	var line = "{7033}C"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseCurrencyInstructedAmount()
 
-	expected := r.parseError(NewTagWrongLengthErr(29, len(r.line))).Error()
-	require.EqualError(t, err, expected)
+	require.EqualError(t, err, "line:0 record:CurrencyInstructedAmount wire.TagWrongLengthErr must be [8, 31] characters and found 7")
 
 	_, err = r.Read()
-
-	expected = r.parseError(NewTagWrongLengthErr(29, len(r.line))).Error()
-	require.EqualError(t, err, expected)
+	require.EqualError(t, err, "line:1 record:CurrencyInstructedAmount wire.TagWrongLengthErr must be [8, 31] characters and found 7")
 }
 
 // TestParseCurrencyInstructedAmountReaderParseError parses a wrong CurrencyInstructedAmount reader parse error
 func TestParseCurrencyInstructedAmountReaderParseError(t *testing.T) {
-	var line = "{7033}Swift00000000Z001500,49"
+	var line = "{7033}Swift*00000000Z001500,49*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 

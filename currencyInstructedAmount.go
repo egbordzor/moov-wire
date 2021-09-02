@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -39,12 +40,20 @@ func NewCurrencyInstructedAmount() *CurrencyInstructedAmount {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (cia *CurrencyInstructedAmount) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 29 {
-		return NewTagWrongLengthErr(29, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 8 || dataLen > 31 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [8, 31] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	cia.tag = record[:6]
-	cia.SwiftFieldTag = cia.parseStringField(record[6:11])
-	cia.Amount = cia.parseStringField(record[11:29])
+
+	optionalFields := strings.Split(record[6:], "*")
+	cia.SwiftFieldTag = cia.parseStringField(optionalFields[0])
+	if len(optionalFields) >= 2 {
+		cia.Amount = cia.parseStringField(optionalFields[1])
+	}
 	return nil
 }
 
@@ -67,8 +76,8 @@ func (cia *CurrencyInstructedAmount) String() string {
 	var buf strings.Builder
 	buf.Grow(29)
 	buf.WriteString(cia.tag)
-	buf.WriteString(cia.SwiftFieldTagField())
-	buf.WriteString(cia.AmountField())
+	buf.WriteString(strings.TrimSpace(cia.SwiftFieldTagField()) + "*")
+	buf.WriteString(strings.TrimSpace(cia.AmountField()) + "*")
 	return buf.String()
 }
 

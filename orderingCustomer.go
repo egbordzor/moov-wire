@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,16 +37,22 @@ func NewOrderingCustomer() *OrderingCustomer {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (oc *OrderingCustomer) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 186 {
-		return NewTagWrongLengthErr(186, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 8 || dataLen > 192 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [8, 192] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	oc.tag = record[:6]
-	oc.CoverPayment.SwiftFieldTag = oc.parseStringField(record[6:11])
-	oc.CoverPayment.SwiftLineOne = oc.parseStringField(record[11:46])
-	oc.CoverPayment.SwiftLineTwo = oc.parseStringField(record[46:81])
-	oc.CoverPayment.SwiftLineThree = oc.parseStringField(record[81:116])
-	oc.CoverPayment.SwiftLineFour = oc.parseStringField(record[116:151])
-	oc.CoverPayment.SwiftLineFive = oc.parseStringField(record[151:186])
+
+	optionalFields := strings.Split(record[6:], "*")
+	oc.CoverPayment.SwiftFieldTag = oc.parseStringField(optionalFields[0])
+	oc.CoverPayment.SwiftLineOne = oc.parseStringField(optionalFields[1])
+	oc.CoverPayment.SwiftLineTwo = oc.parseStringField(optionalFields[2])
+	oc.CoverPayment.SwiftLineThree = oc.parseStringField(optionalFields[3])
+	oc.CoverPayment.SwiftLineFour = oc.parseStringField(optionalFields[4])
+	oc.CoverPayment.SwiftLineFive = oc.parseStringField(optionalFields[5])
 	return nil
 }
 
@@ -68,12 +75,12 @@ func (oc *OrderingCustomer) String() string {
 	var buf strings.Builder
 	buf.Grow(186)
 	buf.WriteString(oc.tag)
-	buf.WriteString(oc.SwiftFieldTagField())
-	buf.WriteString(oc.SwiftLineOneField())
-	buf.WriteString(oc.SwiftLineTwoField())
-	buf.WriteString(oc.SwiftLineThreeField())
-	buf.WriteString(oc.SwiftLineFourField())
-	buf.WriteString(oc.SwiftLineFiveField())
+	buf.WriteString(strings.TrimSpace(oc.SwiftFieldTagField()) + "*")
+	buf.WriteString(strings.TrimSpace(oc.SwiftLineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(oc.SwiftLineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(oc.SwiftLineThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(oc.SwiftLineFourField()) + "*")
+	buf.WriteString(strings.TrimSpace(oc.SwiftLineFiveField()) + "*")
 	return buf.String()
 }
 
