@@ -7,7 +7,6 @@ package wire
 import (
 	"encoding/json"
 	"strings"
-	"unicode/utf8"
 )
 
 // Charges is the Charges of the wire
@@ -52,15 +51,14 @@ func NewCharges() *Charges {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (c *Charges) Parse(record string) {
-	if utf8.RuneCountInString(record) < 67 {
-		return // line too short
-	}
 	c.tag = record[:6]
 	c.ChargeDetails = c.parseStringField(record[6:7])
-	c.SendersChargesOne = c.parseStringField(record[7:22])
-	c.SendersChargesTwo = c.parseStringField(record[22:37])
-	c.SendersChargesThree = c.parseStringField(record[37:52])
-	c.SendersChargesFour = c.parseStringField(record[52:67])
+
+	optionalFields := strings.Split(record[7:], "*")
+	c.SendersChargesOne = c.parseStringField(optionalFields[0])
+	c.SendersChargesTwo = c.parseStringField(optionalFields[1])
+	c.SendersChargesThree = c.parseStringField(optionalFields[2])
+	c.SendersChargesFour = c.parseStringField(optionalFields[3])
 }
 
 func (c *Charges) UnmarshalJSON(data []byte) error {
@@ -83,10 +81,10 @@ func (c *Charges) String() string {
 	buf.Grow(67)
 	buf.WriteString(c.tag)
 	buf.WriteString(c.ChargeDetailsField())
-	buf.WriteString(c.SendersChargesOneField())
-	buf.WriteString(c.SendersChargesTwoField())
-	buf.WriteString(c.SendersChargesThreeField())
-	buf.WriteString(c.SendersChargesFourField())
+	buf.WriteString(strings.TrimSpace(c.SendersChargesOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(c.SendersChargesTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(c.SendersChargesThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(c.SendersChargesFourField()) + "*")
 	return buf.String()
 }
 
