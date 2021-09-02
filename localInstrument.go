@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -38,12 +39,19 @@ func NewLocalInstrument() *LocalInstrument {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (li *LocalInstrument) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 45 {
-		return NewTagWrongLengthErr(45, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 10 || dataLen > 46 {
+		return TagWrongLengthErr{
+			Message:   fmt.Sprintf("must be [10, 46] characters and found %d", dataLen),
+			TagLength: 46,
+			Length:    dataLen,
+		}
 	}
 	li.tag = record[:6]
 	li.LocalInstrumentCode = li.parseStringField(record[6:10])
-	li.ProprietaryCode = li.parseStringField(record[10:45])
+	if delim := strings.IndexByte(record, '*'); delim > 0 {
+		li.ProprietaryCode = li.parseStringField(record[10:delim])
+	}
 	return nil
 }
 
@@ -67,7 +75,9 @@ func (li *LocalInstrument) String() string {
 	buf.Grow(45)
 	buf.WriteString(li.tag)
 	buf.WriteString(li.LocalInstrumentCodeField())
-	buf.WriteString(li.ProprietaryCodeField())
+	if li.ProprietaryCode != "" {
+		buf.WriteString(strings.TrimSpace(li.ProprietaryCodeField()) + "*")
+	}
 	return buf.String()
 }
 
