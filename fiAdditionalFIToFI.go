@@ -47,7 +47,9 @@ func (fifi *FIAdditionalFIToFI) Parse(record string) error {
 	fifi.tag = record[:6]
 
 	optionalFields := strings.Split(record[6:], "*")
-	fifi.AdditionalFIToFI.LineOne = fifi.parseStringField(optionalFields[0])
+	if len(optionalFields) >= 1 {
+		fifi.AdditionalFIToFI.LineOne = fifi.parseStringField(optionalFields[0])
+	}
 	if len(optionalFields) >= 2 {
 		fifi.AdditionalFIToFI.LineTwo = fifi.parseStringField(optionalFields[1])
 	}

@@ -53,10 +53,18 @@ func (ob *OriginatorToBeneficiary) Parse(record string) error {
 	ob.tag = record[:6]
 
 	optionalFields := strings.Split(record[6:], "*")
-	ob.LineOne = ob.parseStringField(optionalFields[0])
-	ob.LineTwo = ob.parseStringField(optionalFields[1])
-	ob.LineThree = ob.parseStringField(optionalFields[2])
-	ob.LineFour = ob.parseStringField(optionalFields[3])
+	if len(optionalFields) >= 1 {
+		ob.LineOne = ob.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		ob.LineTwo = ob.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		ob.LineThree = ob.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		ob.LineFour = ob.parseStringField(optionalFields[3])
+	}
 	return nil
 }
 

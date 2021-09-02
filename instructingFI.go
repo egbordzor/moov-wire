@@ -48,11 +48,21 @@ func (ifi *InstructingFI) Parse(record string) error {
 	ifi.FinancialInstitution.IdentificationCode = ifi.parseStringField(record[6:7])
 
 	optionalFields := strings.Split(record[7:], "*")
-	ifi.FinancialInstitution.Identifier = ifi.parseStringField(optionalFields[0])
-	ifi.FinancialInstitution.Name = ifi.parseStringField(optionalFields[1])
-	ifi.FinancialInstitution.Address.AddressLineOne = ifi.parseStringField(optionalFields[2])
-	ifi.FinancialInstitution.Address.AddressLineTwo = ifi.parseStringField(optionalFields[3])
-	ifi.FinancialInstitution.Address.AddressLineThree = ifi.parseStringField(optionalFields[4])
+	if len(optionalFields) >= 1 {
+		ifi.FinancialInstitution.Identifier = ifi.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		ifi.FinancialInstitution.Name = ifi.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		ifi.FinancialInstitution.Address.AddressLineOne = ifi.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		ifi.FinancialInstitution.Address.AddressLineTwo = ifi.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		ifi.FinancialInstitution.Address.AddressLineThree = ifi.parseStringField(optionalFields[4])
+	}
 	return nil
 }
 

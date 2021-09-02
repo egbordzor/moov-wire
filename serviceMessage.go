@@ -69,7 +69,9 @@ func (sm *ServiceMessage) Parse(record string) error {
 	sm.tag = record[:6]
 
 	optionalFields := strings.Split(record[6:], "*")
-	sm.LineOne = sm.parseStringField(optionalFields[0])
+	if len(optionalFields) >= 1 {
+		sm.LineOne = sm.parseStringField(optionalFields[0])
+	}
 	if len(optionalFields) >= 2 {
 		sm.LineTwo = sm.parseStringField(optionalFields[1])
 	}

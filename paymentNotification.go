@@ -62,12 +62,24 @@ func (pn *PaymentNotification) Parse(record string) error {
 	pn.PaymentNotificationIndicator = pn.parseStringField(record[6:7])
 
 	optionalFields := strings.Split(record[7:], "*")
-	pn.ContactNotificationElectronicAddress = pn.parseStringField(optionalFields[0])
-	pn.ContactName = pn.parseStringField(optionalFields[1])
-	pn.ContactPhoneNumber = pn.parseStringField(optionalFields[2])
-	pn.ContactMobileNumber = pn.parseStringField(optionalFields[3])
-	pn.ContactFaxNumber = pn.parseStringField(optionalFields[4])
-	pn.EndToEndIdentification = pn.parseStringField(optionalFields[5])
+	if len(optionalFields) >= 1 {
+		pn.ContactNotificationElectronicAddress = pn.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		pn.ContactName = pn.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		pn.ContactPhoneNumber = pn.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		pn.ContactMobileNumber = pn.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		pn.ContactFaxNumber = pn.parseStringField(optionalFields[4])
+	}
+	if len(optionalFields) >= 6 {
+		pn.EndToEndIdentification = pn.parseStringField(optionalFields[5])
+	}
 	return nil
 }
 

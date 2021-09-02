@@ -55,10 +55,18 @@ func (c *Charges) Parse(record string) {
 	c.ChargeDetails = c.parseStringField(record[6:7])
 
 	optionalFields := strings.Split(record[7:], "*")
-	c.SendersChargesOne = c.parseStringField(optionalFields[0])
-	c.SendersChargesTwo = c.parseStringField(optionalFields[1])
-	c.SendersChargesThree = c.parseStringField(optionalFields[2])
-	c.SendersChargesFour = c.parseStringField(optionalFields[3])
+	if len(optionalFields) >= 1 {
+		c.SendersChargesOne = c.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		c.SendersChargesTwo = c.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		c.SendersChargesThree = c.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		c.SendersChargesFour = c.parseStringField(optionalFields[3])
+	}
 }
 
 func (c *Charges) UnmarshalJSON(data []byte) error {

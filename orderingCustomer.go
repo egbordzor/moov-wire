@@ -47,12 +47,24 @@ func (oc *OrderingCustomer) Parse(record string) error {
 	oc.tag = record[:6]
 
 	optionalFields := strings.Split(record[6:], "*")
-	oc.CoverPayment.SwiftFieldTag = oc.parseStringField(optionalFields[0])
-	oc.CoverPayment.SwiftLineOne = oc.parseStringField(optionalFields[1])
-	oc.CoverPayment.SwiftLineTwo = oc.parseStringField(optionalFields[2])
-	oc.CoverPayment.SwiftLineThree = oc.parseStringField(optionalFields[3])
-	oc.CoverPayment.SwiftLineFour = oc.parseStringField(optionalFields[4])
-	oc.CoverPayment.SwiftLineFive = oc.parseStringField(optionalFields[5])
+	if len(optionalFields) >= 1 {
+		oc.CoverPayment.SwiftFieldTag = oc.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		oc.CoverPayment.SwiftLineOne = oc.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		oc.CoverPayment.SwiftLineTwo = oc.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		oc.CoverPayment.SwiftLineThree = oc.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		oc.CoverPayment.SwiftLineFour = oc.parseStringField(optionalFields[4])
+	}
+	if len(optionalFields) >= 6 {
+		oc.CoverPayment.SwiftLineFive = oc.parseStringField(optionalFields[5])
+	}
 	return nil
 }
 

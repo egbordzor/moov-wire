@@ -48,11 +48,21 @@ func (bfi *BeneficiaryFI) Parse(record string) error {
 	bfi.FinancialInstitution.IdentificationCode = bfi.parseStringField(record[6:7])
 
 	optionalFields := strings.Split(record[7:], "*")
-	bfi.FinancialInstitution.Identifier = bfi.parseStringField(optionalFields[0])
-	bfi.FinancialInstitution.Name = bfi.parseStringField(optionalFields[1])
-	bfi.FinancialInstitution.Address.AddressLineOne = bfi.parseStringField(optionalFields[2])
-	bfi.FinancialInstitution.Address.AddressLineTwo = bfi.parseStringField(optionalFields[3])
-	bfi.FinancialInstitution.Address.AddressLineThree = bfi.parseStringField(optionalFields[4])
+	if len(optionalFields) >= 1 {
+		bfi.FinancialInstitution.Identifier = bfi.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		bfi.FinancialInstitution.Name = bfi.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		bfi.FinancialInstitution.Address.AddressLineOne = bfi.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		bfi.FinancialInstitution.Address.AddressLineTwo = bfi.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		bfi.FinancialInstitution.Address.AddressLineThree = bfi.parseStringField(optionalFields[4])
+	}
 	return nil
 }
 

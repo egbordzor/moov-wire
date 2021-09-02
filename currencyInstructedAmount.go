@@ -50,7 +50,9 @@ func (cia *CurrencyInstructedAmount) Parse(record string) error {
 	cia.tag = record[:6]
 
 	optionalFields := strings.Split(record[6:], "*")
-	cia.SwiftFieldTag = cia.parseStringField(optionalFields[0])
+	if len(optionalFields) >= 1 {
+		cia.SwiftFieldTag = cia.parseStringField(optionalFields[0])
+	}
 	if len(optionalFields) >= 2 {
 		cia.Amount = cia.parseStringField(optionalFields[1])
 	}

@@ -48,7 +48,9 @@ func (fibfia *FIBeneficiaryFIAdvice) Parse(record string) error {
 	fibfia.Advice.AdviceCode = fibfia.parseStringField(record[6:9])
 
 	optionalFields := strings.Split(record[9:], "*")
-	fibfia.Advice.LineOne = fibfia.parseStringField(optionalFields[0])
+	if len(optionalFields) >= 1 {
+		fibfia.Advice.LineOne = fibfia.parseStringField(optionalFields[0])
+	}
 	if len(optionalFields) >= 2 {
 		fibfia.Advice.LineTwo = fibfia.parseStringField(optionalFields[1])
 	}

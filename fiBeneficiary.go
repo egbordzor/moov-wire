@@ -47,7 +47,9 @@ func (fib *FIBeneficiary) Parse(record string) error {
 	fib.tag = record[:6]
 
 	optionalFields := strings.Split(record[6:], "*")
-	fib.FIToFI.LineOne = fib.parseStringField(optionalFields[0])
+	if len(optionalFields) >= 1 {
+		fib.FIToFI.LineOne = fib.parseStringField(optionalFields[0])
+	}
 	if len(optionalFields) >= 2 {
 		fib.FIToFI.LineTwo = fib.parseStringField(optionalFields[1])
 	}

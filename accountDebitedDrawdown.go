@@ -53,11 +53,21 @@ func (debitDD *AccountDebitedDrawdown) Parse(record string) error {
 	debitDD.IdentificationCode = debitDD.parseStringField(record[6:7])
 
 	optionalFields := strings.Split(record[7:], "*")
-	debitDD.Identifier = debitDD.parseStringField(optionalFields[0])
-	debitDD.Name = debitDD.parseStringField(optionalFields[1])
-	debitDD.Address.AddressLineOne = debitDD.parseStringField(optionalFields[2])
-	debitDD.Address.AddressLineTwo = debitDD.parseStringField(optionalFields[3])
-	debitDD.Address.AddressLineThree = debitDD.parseStringField(optionalFields[4])
+	if len(optionalFields) >= 1 {
+		debitDD.Identifier = debitDD.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		debitDD.Name = debitDD.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		debitDD.Address.AddressLineOne = debitDD.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		debitDD.Address.AddressLineTwo = debitDD.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		debitDD.Address.AddressLineThree = debitDD.parseStringField(optionalFields[4])
+	}
 	return nil
 }
 

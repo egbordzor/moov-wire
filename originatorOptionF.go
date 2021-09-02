@@ -111,11 +111,21 @@ func (oof *OriginatorOptionF) Parse(record string) error {
 	oof.tag = oof.parseStringField(record[:6])
 
 	optionalFields := strings.Split(record[6:], "*")
-	oof.PartyIdentifier = oof.parseStringField(optionalFields[0])
-	oof.Name = oof.parseStringField(optionalFields[1])
-	oof.LineOne = oof.parseStringField(optionalFields[2])
-	oof.LineTwo = oof.parseStringField(optionalFields[3])
-	oof.LineThree = oof.parseStringField(optionalFields[4])
+	if len(optionalFields) >= 1 {
+		oof.PartyIdentifier = oof.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		oof.Name = oof.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		oof.LineOne = oof.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		oof.LineTwo = oof.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		oof.LineThree = oof.parseStringField(optionalFields[4])
+	}
 	return nil
 }
 
