@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -38,13 +39,19 @@ func NewSenderDepositoryInstitution() *SenderDepositoryInstitution {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (sdi *SenderDepositoryInstitution) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 33 {
-		return NewTagWrongLengthErr(33, utf8.RuneCountInString(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen <= 16 || dataLen > 34 {
+		return TagWrongLengthErr{
+			Message:   fmt.Sprintf("must be [17, 34] characters and found %d", dataLen),
+			TagLength: 34,
+			Length:    dataLen,
+		}
 	}
 
 	sdi.tag = record[:6]
 	sdi.SenderABANumber = sdi.parseStringField(record[6:15])
-	sdi.SenderShortName = sdi.parseStringField(record[15:33])
+	delim := strings.IndexByte(record, '*')
+	sdi.SenderShortName = sdi.parseStringField(record[15:delim])
 	return nil
 }
 
@@ -68,7 +75,7 @@ func (sdi *SenderDepositoryInstitution) String() string {
 	buf.Grow(39)
 	buf.WriteString(sdi.tag)
 	buf.WriteString(sdi.SenderABANumberField())
-	buf.WriteString(sdi.SenderShortNameField())
+	buf.WriteString(strings.TrimSpace(sdi.SenderShortNameField()) + "*")
 	return buf.String()
 }
 
