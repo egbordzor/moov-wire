@@ -40,9 +40,9 @@ func NewSenderDepositoryInstitution() *SenderDepositoryInstitution {
 // successful parsing and data validity.
 func (sdi *SenderDepositoryInstitution) Parse(record string) error {
 	dataLen := utf8.RuneCountInString(record)
-	if dataLen <= 16 || dataLen > 34 {
+	if dataLen < 15 || dataLen > 34 {
 		return TagWrongLengthErr{
-			Message:   fmt.Sprintf("must be [17, 34] characters and found %d", dataLen),
+			Message:   fmt.Sprintf("must be [15, 34] characters and found %d", dataLen),
 			TagLength: 34,
 			Length:    dataLen,
 		}
@@ -50,8 +50,9 @@ func (sdi *SenderDepositoryInstitution) Parse(record string) error {
 
 	sdi.tag = record[:6]
 	sdi.SenderABANumber = sdi.parseStringField(record[6:15])
-	delim := strings.IndexByte(record, '*')
-	sdi.SenderShortName = sdi.parseStringField(record[15:delim])
+	if delim := strings.IndexByte(record, '*'); delim > 0 {
+		sdi.SenderShortName = sdi.parseStringField(record[15:delim])
+	}
 	return nil
 }
 
@@ -75,7 +76,9 @@ func (sdi *SenderDepositoryInstitution) String() string {
 	buf.Grow(39)
 	buf.WriteString(sdi.tag)
 	buf.WriteString(sdi.SenderABANumberField())
-	buf.WriteString(strings.TrimSpace(sdi.SenderShortNameField()) + "*")
+	if sdi.SenderShortName != "" {
+		buf.WriteString(strings.TrimSpace(sdi.SenderShortNameField()) + "*")
+	}
 	return buf.String()
 }
 

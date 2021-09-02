@@ -33,28 +33,28 @@ func TestSenderReferenceAlphaNumeric(t *testing.T) {
 
 // TestParseSenderReferenceWrongLength parses a wrong SenderReference record length
 func TestParseSenderReferenceWrongLength(t *testing.T) {
-	var line = "{3320}Se"
+	var line = "{3320}*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseSenderReference()
 
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(22, len(r.line))).Error())
+	require.EqualError(t, err, "line:0 record:SenderReference wire.TagWrongLengthErr must be [8, 23] characters and found 7")
 }
 
 // TestParseSenderReferenceReaderParseError parses a wrong SenderReference reader parse error
 func TestParseSenderReferenceReaderParseError(t *testing.T) {
-	var line = "{3320}Sender®Reference"
+	var line = "{3320}Sender®Reference*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseSenderReference()
 
-	require.EqualError(t, err, r.parseError(fieldError("SenderReference", ErrNonAlphanumeric, "Sender®Referenc")).Error())
+	require.EqualError(t, err, r.parseError(fieldError("SenderReference", ErrNonAlphanumeric, "Sender®Reference")).Error())
 
 	_, err = r.Read()
 
-	require.EqualError(t, err, r.parseError(fieldError("SenderReference", ErrNonAlphanumeric, "Sender®Referenc")).Error())
+	require.EqualError(t, err, r.parseError(fieldError("SenderReference", ErrNonAlphanumeric, "Sender®Reference")).Error())
 }
 
 // TestSenderReferenceTagError validates a SenderReference tag

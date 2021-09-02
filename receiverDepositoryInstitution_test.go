@@ -70,12 +70,12 @@ func TestParseReceiverWrongLength(t *testing.T) {
 
 	err := r.parseReceiverDepositoryInstitution()
 
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(33, len(r.line))).Error())
+	require.EqualError(t, err, "line:0 record:ReceiverDepositoryInstitution wire.TagWrongLengthErr must be [15, 34] characters and found 8")
 }
 
 // TestParseReceiverReaderParseError parses a wrong Receiver reader parse error
 func TestParseReceiverReaderParseError(t *testing.T) {
-	var line = "{3400}2313Z0104Citadel           "
+	var line = "{3400}2313Z0104Citadel           *"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 

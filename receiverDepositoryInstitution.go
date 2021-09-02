@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -38,12 +39,19 @@ func NewReceiverDepositoryInstitution() *ReceiverDepositoryInstitution {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (rdi *ReceiverDepositoryInstitution) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 33 {
-		return NewTagWrongLengthErr(33, utf8.RuneCountInString(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 15 || dataLen > 34 {
+		return TagWrongLengthErr{
+			Message:   fmt.Sprintf("must be [15, 34] characters and found %d", dataLen),
+			TagLength: 34,
+			Length:    dataLen,
+		}
 	}
 	rdi.tag = record[:6]
 	rdi.ReceiverABANumber = rdi.parseStringField(record[6:15])
-	rdi.ReceiverShortName = rdi.parseStringField(record[15:33])
+	if delim := strings.IndexByte(record, '*'); delim > 0 {
+		rdi.ReceiverShortName = rdi.parseStringField(record[15:delim])
+	}
 	return nil
 }
 
@@ -67,7 +75,9 @@ func (rdi *ReceiverDepositoryInstitution) String() string {
 	buf.Grow(33)
 	buf.WriteString(rdi.tag)
 	buf.WriteString(rdi.ReceiverABANumberField())
-	buf.WriteString(rdi.ReceiverShortNameField())
+	if rdi.ReceiverShortName != "" {
+		buf.WriteString(strings.TrimSpace(rdi.ReceiverShortNameField()) + "*")
+	}
 	return buf.String()
 }
 

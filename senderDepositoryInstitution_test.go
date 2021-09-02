@@ -73,7 +73,7 @@ func TestParseSenderWrongLength(t *testing.T) {
 
 	err := r.parseSenderDepositoryInstitution()
 
-	require.EqualError(t, err, "line:0 record:SenderDepositoryInstitution wire.TagWrongLengthErr must be [17, 34] characters and found 11")
+	require.EqualError(t, err, "line:0 record:SenderDepositoryInstitution wire.TagWrongLengthErr must be [15, 34] characters and found 11")
 }
 
 // TestParseSenderReaderParseError parses a wrong Sender reader parse error
