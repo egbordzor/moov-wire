@@ -47,7 +47,9 @@ func (firfi *FIReceiverFI) Parse(record string) error {
 	firfi.tag = record[:6]
 
 	optionalFields := strings.Split(record[6:], "*")
-	firfi.FIToFI.LineOne = firfi.parseStringField(optionalFields[0])
+	if len(optionalFields) >= 1 {
+		firfi.FIToFI.LineOne = firfi.parseStringField(optionalFields[0])
+	}
 	if len(optionalFields) >= 2 {
 		firfi.FIToFI.LineTwo = firfi.parseStringField(optionalFields[1])
 	}

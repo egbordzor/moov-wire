@@ -48,11 +48,21 @@ func (ben *Beneficiary) Parse(record string) error {
 	ben.Personal.IdentificationCode = ben.parseStringField(record[6:7])
 
 	optionalFields := strings.Split(record[7:], "*")
-	ben.Personal.Identifier = ben.parseStringField(optionalFields[0])
-	ben.Personal.Name = ben.parseStringField(optionalFields[1])
-	ben.Personal.Address.AddressLineOne = ben.parseStringField(optionalFields[2])
-	ben.Personal.Address.AddressLineTwo = ben.parseStringField(optionalFields[3])
-	ben.Personal.Address.AddressLineThree = ben.parseStringField(optionalFields[4])
+	if len(optionalFields) >= 1 {
+		ben.Personal.Identifier = ben.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		ben.Personal.Name = ben.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		ben.Personal.Address.AddressLineOne = ben.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		ben.Personal.Address.AddressLineTwo = ben.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		ben.Personal.Address.AddressLineThree = ben.parseStringField(optionalFields[4])
+	}
 	return nil
 }
 

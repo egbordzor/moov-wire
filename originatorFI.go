@@ -48,11 +48,21 @@ func (ofi *OriginatorFI) Parse(record string) error {
 	ofi.FinancialInstitution.IdentificationCode = ofi.parseStringField(record[6:7])
 
 	optionalFields := strings.Split(record[7:], "*")
-	ofi.FinancialInstitution.Identifier = ofi.parseStringField(optionalFields[0])
-	ofi.FinancialInstitution.Name = ofi.parseStringField(optionalFields[1])
-	ofi.FinancialInstitution.Address.AddressLineOne = ofi.parseStringField(optionalFields[2])
-	ofi.FinancialInstitution.Address.AddressLineTwo = ofi.parseStringField(optionalFields[3])
-	ofi.FinancialInstitution.Address.AddressLineThree = ofi.parseStringField(optionalFields[4])
+	if len(optionalFields) >= 1 {
+		ofi.FinancialInstitution.Identifier = ofi.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		ofi.FinancialInstitution.Name = ofi.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		ofi.FinancialInstitution.Address.AddressLineOne = ofi.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		ofi.FinancialInstitution.Address.AddressLineTwo = ofi.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		ofi.FinancialInstitution.Address.AddressLineThree = ofi.parseStringField(optionalFields[4])
+	}
 	return nil
 }
 

@@ -48,11 +48,21 @@ func (bifi *BeneficiaryIntermediaryFI) Parse(record string) error {
 	bifi.FinancialInstitution.IdentificationCode = bifi.parseStringField(record[6:7])
 
 	optionalFields := strings.Split(record[7:], "*")
-	bifi.FinancialInstitution.Identifier = bifi.parseStringField(optionalFields[0])
-	bifi.FinancialInstitution.Name = bifi.parseStringField(optionalFields[1])
-	bifi.FinancialInstitution.Address.AddressLineOne = bifi.parseStringField(optionalFields[2])
-	bifi.FinancialInstitution.Address.AddressLineTwo = bifi.parseStringField(optionalFields[3])
-	bifi.FinancialInstitution.Address.AddressLineThree = bifi.parseStringField(optionalFields[4])
+	if len(optionalFields) >= 1 {
+		bifi.FinancialInstitution.Identifier = bifi.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		bifi.FinancialInstitution.Name = bifi.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		bifi.FinancialInstitution.Address.AddressLineOne = bifi.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		bifi.FinancialInstitution.Address.AddressLineTwo = bifi.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		bifi.FinancialInstitution.Address.AddressLineThree = bifi.parseStringField(optionalFields[4])
+	}
 	return nil
 }
 

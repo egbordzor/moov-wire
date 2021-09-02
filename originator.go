@@ -48,11 +48,21 @@ func (o *Originator) Parse(record string) error {
 	o.Personal.IdentificationCode = o.parseStringField(record[6:7])
 
 	optionalFields := strings.Split(record[7:], "*")
-	o.Personal.Identifier = o.parseStringField(optionalFields[0])
-	o.Personal.Name = o.parseStringField(optionalFields[1])
-	o.Personal.Address.AddressLineOne = o.parseStringField(optionalFields[2])
-	o.Personal.Address.AddressLineTwo = o.parseStringField(optionalFields[3])
-	o.Personal.Address.AddressLineThree = o.parseStringField(optionalFields[4])
+	if len(optionalFields) >= 1 {
+		o.Personal.Identifier = o.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		o.Personal.Name = o.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		o.Personal.Address.AddressLineOne = o.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		o.Personal.Address.AddressLineTwo = o.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		o.Personal.Address.AddressLineThree = o.parseStringField(optionalFields[4])
+	}
 	return nil
 }
 
