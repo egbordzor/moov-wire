@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -58,22 +59,50 @@ func NewServiceMessage() *ServiceMessage {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (sm *ServiceMessage) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 426 {
-		return NewTagWrongLengthErr(426, utf8.RuneCountInString(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 8 || dataLen > 438 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [8, 438] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	sm.tag = record[:6]
-	sm.LineOne = sm.parseStringField(record[6:41])
-	sm.LineTwo = sm.parseStringField(record[41:76])
-	sm.LineThree = sm.parseStringField(record[76:111])
-	sm.LineFour = sm.parseStringField(record[111:146])
-	sm.LineFive = sm.parseStringField(record[146:181])
-	sm.LineSix = sm.parseStringField(record[181:216])
-	sm.LineSeven = sm.parseStringField(record[216:251])
-	sm.LineEight = sm.parseStringField(record[251:286])
-	sm.LineNine = sm.parseStringField(record[286:321])
-	sm.LineTen = sm.parseStringField(record[321:356])
-	sm.LineEleven = sm.parseStringField(record[356:391])
-	sm.LineTwelve = sm.parseStringField(record[391:426])
+
+	optionalFields := strings.Split(record[6:], "*")
+	sm.LineOne = sm.parseStringField(optionalFields[0])
+	if len(optionalFields) >= 2 {
+		sm.LineTwo = sm.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		sm.LineThree = sm.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		sm.LineFour = sm.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		sm.LineFive = sm.parseStringField(optionalFields[4])
+	}
+	if len(optionalFields) >= 6 {
+		sm.LineSix = sm.parseStringField(optionalFields[5])
+	}
+	if len(optionalFields) >= 7 {
+		sm.LineSeven = sm.parseStringField(optionalFields[6])
+	}
+	if len(optionalFields) >= 8 {
+		sm.LineEight = sm.parseStringField(optionalFields[7])
+	}
+	if len(optionalFields) >= 9 {
+		sm.LineNine = sm.parseStringField(optionalFields[8])
+	}
+	if len(optionalFields) >= 10 {
+		sm.LineTen = sm.parseStringField(optionalFields[9])
+	}
+	if len(optionalFields) >= 11 {
+		sm.LineEleven = sm.parseStringField(optionalFields[10])
+	}
+	if len(optionalFields) >= 12 {
+		sm.LineTwelve = sm.parseStringField(optionalFields[11])
+	}
 	return nil
 }
 
@@ -96,18 +125,18 @@ func (sm *ServiceMessage) String() string {
 	var buf strings.Builder
 	buf.Grow(426)
 	buf.WriteString(sm.tag)
-	buf.WriteString(sm.LineOneField())
-	buf.WriteString(sm.LineTwoField())
-	buf.WriteString(sm.LineThreeField())
-	buf.WriteString(sm.LineFourField())
-	buf.WriteString(sm.LineFiveField())
-	buf.WriteString(sm.LineSixField())
-	buf.WriteString(sm.LineSevenField())
-	buf.WriteString(sm.LineEightField())
-	buf.WriteString(sm.LineNineField())
-	buf.WriteString(sm.LineTenField())
-	buf.WriteString(sm.LineElevenField())
-	buf.WriteString(sm.LineTwelveField())
+	buf.WriteString(strings.TrimSpace(sm.LineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(sm.LineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(sm.LineThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(sm.LineFourField()) + "*")
+	buf.WriteString(strings.TrimSpace(sm.LineFiveField()) + "*")
+	buf.WriteString(strings.TrimSpace(sm.LineSixField()) + "*")
+	buf.WriteString(strings.TrimSpace(sm.LineSevenField()) + "*")
+	buf.WriteString(strings.TrimSpace(sm.LineEightField()) + "*")
+	buf.WriteString(strings.TrimSpace(sm.LineNineField()) + "*")
+	buf.WriteString(strings.TrimSpace(sm.LineTenField()) + "*")
+	buf.WriteString(strings.TrimSpace(sm.LineElevenField()) + "*")
+	buf.WriteString(strings.TrimSpace(sm.LineTwelveField()) + "*")
 	return buf.String()
 }
 
