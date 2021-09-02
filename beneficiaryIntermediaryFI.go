@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,16 +37,22 @@ func NewBeneficiaryIntermediaryFI() *BeneficiaryIntermediaryFI {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (bifi *BeneficiaryIntermediaryFI) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 181 {
-		return NewTagWrongLengthErr(181, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 12 || dataLen > 186 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [12, 186] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	bifi.tag = record[:6]
 	bifi.FinancialInstitution.IdentificationCode = bifi.parseStringField(record[6:7])
-	bifi.FinancialInstitution.Identifier = bifi.parseStringField(record[7:41])
-	bifi.FinancialInstitution.Name = bifi.parseStringField(record[41:76])
-	bifi.FinancialInstitution.Address.AddressLineOne = bifi.parseStringField(record[76:111])
-	bifi.FinancialInstitution.Address.AddressLineTwo = bifi.parseStringField(record[111:146])
-	bifi.FinancialInstitution.Address.AddressLineThree = bifi.parseStringField(record[146:181])
+
+	optionalFields := strings.Split(record[7:], "*")
+	bifi.FinancialInstitution.Identifier = bifi.parseStringField(optionalFields[0])
+	bifi.FinancialInstitution.Name = bifi.parseStringField(optionalFields[1])
+	bifi.FinancialInstitution.Address.AddressLineOne = bifi.parseStringField(optionalFields[2])
+	bifi.FinancialInstitution.Address.AddressLineTwo = bifi.parseStringField(optionalFields[3])
+	bifi.FinancialInstitution.Address.AddressLineThree = bifi.parseStringField(optionalFields[4])
 	return nil
 }
 
@@ -66,14 +73,14 @@ func (bifi *BeneficiaryIntermediaryFI) UnmarshalJSON(data []byte) error {
 // String writes BeneficiaryIntermediaryFI
 func (bifi *BeneficiaryIntermediaryFI) String() string {
 	var buf strings.Builder
-	buf.Grow(181)
+	buf.Grow(186)
 	buf.WriteString(bifi.tag)
 	buf.WriteString(bifi.IdentificationCodeField())
-	buf.WriteString(bifi.IdentifierField())
-	buf.WriteString(bifi.NameField())
-	buf.WriteString(bifi.AddressLineOneField())
-	buf.WriteString(bifi.AddressLineTwoField())
-	buf.WriteString(bifi.AddressLineThreeField())
+	buf.WriteString(strings.TrimSpace(bifi.IdentifierField()) + "*")
+	buf.WriteString(strings.TrimSpace(bifi.NameField()) + "*")
+	buf.WriteString(strings.TrimSpace(bifi.AddressLineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(bifi.AddressLineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(bifi.AddressLineThreeField()) + "*")
 	return buf.String()
 }
 

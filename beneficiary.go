@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,16 +37,22 @@ func NewBeneficiary() *Beneficiary {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (ben *Beneficiary) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 181 {
-		return NewTagWrongLengthErr(181, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 12 || dataLen > 186 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [12, 186] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	ben.tag = record[:6]
 	ben.Personal.IdentificationCode = ben.parseStringField(record[6:7])
-	ben.Personal.Identifier = ben.parseStringField(record[7:41])
-	ben.Personal.Name = ben.parseStringField(record[41:76])
-	ben.Personal.Address.AddressLineOne = ben.parseStringField(record[76:111])
-	ben.Personal.Address.AddressLineTwo = ben.parseStringField(record[111:146])
-	ben.Personal.Address.AddressLineThree = ben.parseStringField(record[146:181])
+
+	optionalFields := strings.Split(record[7:], "*")
+	ben.Personal.Identifier = ben.parseStringField(optionalFields[0])
+	ben.Personal.Name = ben.parseStringField(optionalFields[1])
+	ben.Personal.Address.AddressLineOne = ben.parseStringField(optionalFields[2])
+	ben.Personal.Address.AddressLineTwo = ben.parseStringField(optionalFields[3])
+	ben.Personal.Address.AddressLineThree = ben.parseStringField(optionalFields[4])
 	return nil
 }
 
@@ -69,11 +76,11 @@ func (ben *Beneficiary) String() string {
 	buf.Grow(181)
 	buf.WriteString(ben.tag)
 	buf.WriteString(ben.IdentificationCodeField())
-	buf.WriteString(ben.IdentifierField())
-	buf.WriteString(ben.NameField())
-	buf.WriteString(ben.AddressLineOneField())
-	buf.WriteString(ben.AddressLineTwoField())
-	buf.WriteString(ben.AddressLineThreeField())
+	buf.WriteString(strings.TrimSpace(ben.IdentifierField()) + "*")
+	buf.WriteString(strings.TrimSpace(ben.NameField()) + "*")
+	buf.WriteString(strings.TrimSpace(ben.AddressLineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(ben.AddressLineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(ben.AddressLineThreeField()) + "*")
 	return buf.String()
 }
 

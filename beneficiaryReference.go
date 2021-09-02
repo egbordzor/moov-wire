@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,11 +37,17 @@ func NewBeneficiaryReference() *BeneficiaryReference {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (br *BeneficiaryReference) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 22 {
-		return NewTagWrongLengthErr(22, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 8 || dataLen > 23 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [8, 23] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	br.tag = record[:6]
-	br.BeneficiaryReference = br.parseStringField(record[6:22])
+
+	delim := strings.IndexByte(record, '*')
+	br.BeneficiaryReference = br.parseStringField(record[6:delim])
 	return nil
 }
 
@@ -63,7 +70,7 @@ func (br *BeneficiaryReference) String() string {
 	var buf strings.Builder
 	buf.Grow(22)
 	buf.WriteString(br.tag)
-	buf.WriteString(br.BeneficiaryReferenceField())
+	buf.WriteString(strings.TrimSpace(br.BeneficiaryReferenceField()) + "*")
 	return buf.String()
 }
 
