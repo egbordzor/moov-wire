@@ -6,7 +6,6 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -37,35 +36,17 @@ func NewFIDrawdownDebitAccountAdvice() *FIDrawdownDebitAccountAdvice {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (debitDDAdvice *FIDrawdownDebitAccountAdvice) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 9 || dataLen > 206 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [9, 206] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
+	if utf8.RuneCountInString(record) != 200 {
+		return NewTagWrongLengthErr(200, len(record))
 	}
 	debitDDAdvice.tag = record[:6]
 	debitDDAdvice.Advice.AdviceCode = debitDDAdvice.parseStringField(record[6:9])
-
-	optionalFields := strings.Split(record[9:], "*")
-	if len(optionalFields) >= 1 {
-		debitDDAdvice.Advice.LineOne = debitDDAdvice.parseStringField(optionalFields[0])
-	}
-	if len(optionalFields) >= 2 {
-		debitDDAdvice.Advice.LineTwo = debitDDAdvice.parseStringField(optionalFields[1])
-	}
-	if len(optionalFields) >= 3 {
-		debitDDAdvice.Advice.LineThree = debitDDAdvice.parseStringField(optionalFields[2])
-	}
-	if len(optionalFields) >= 4 {
-		debitDDAdvice.Advice.LineFour = debitDDAdvice.parseStringField(optionalFields[3])
-	}
-	if len(optionalFields) >= 5 {
-		debitDDAdvice.Advice.LineFive = debitDDAdvice.parseStringField(optionalFields[4])
-	}
-	if len(optionalFields) >= 6 {
-		debitDDAdvice.Advice.LineSix = debitDDAdvice.parseStringField(optionalFields[5])
-	}
+	debitDDAdvice.Advice.LineOne = debitDDAdvice.parseStringField(record[9:35])
+	debitDDAdvice.Advice.LineTwo = debitDDAdvice.parseStringField(record[35:68])
+	debitDDAdvice.Advice.LineThree = debitDDAdvice.parseStringField(record[68:101])
+	debitDDAdvice.Advice.LineFour = debitDDAdvice.parseStringField(record[101:134])
+	debitDDAdvice.Advice.LineFive = debitDDAdvice.parseStringField(record[134:167])
+	debitDDAdvice.Advice.LineSix = debitDDAdvice.parseStringField(record[167:200])
 	return nil
 }
 
@@ -86,15 +67,15 @@ func (debitDDAdvice *FIDrawdownDebitAccountAdvice) UnmarshalJSON(data []byte) er
 // String writes FIDrawdownDebitAccountAdvice
 func (debitDDAdvice *FIDrawdownDebitAccountAdvice) String() string {
 	var buf strings.Builder
-	buf.Grow(206)
+	buf.Grow(200)
 	buf.WriteString(debitDDAdvice.tag)
 	buf.WriteString(debitDDAdvice.AdviceCodeField())
-	buf.WriteString(strings.TrimSpace(debitDDAdvice.LineOneField()) + "*")
-	buf.WriteString(strings.TrimSpace(debitDDAdvice.LineTwoField()) + "*")
-	buf.WriteString(strings.TrimSpace(debitDDAdvice.LineThreeField()) + "*")
-	buf.WriteString(strings.TrimSpace(debitDDAdvice.LineFourField()) + "*")
-	buf.WriteString(strings.TrimSpace(debitDDAdvice.LineFiveField()) + "*")
-	buf.WriteString(strings.TrimSpace(debitDDAdvice.LineSixField()) + "*")
+	buf.WriteString(debitDDAdvice.LineOneField())
+	buf.WriteString(debitDDAdvice.LineTwoField())
+	buf.WriteString(debitDDAdvice.LineThreeField())
+	buf.WriteString(debitDDAdvice.LineFourField())
+	buf.WriteString(debitDDAdvice.LineFiveField())
+	buf.WriteString(debitDDAdvice.LineSixField())
 	return buf.String()
 }
 

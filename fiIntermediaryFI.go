@@ -6,7 +6,6 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -37,32 +36,16 @@ func NewFIIntermediaryFI() *FIIntermediaryFI {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (fiifi *FIIntermediaryFI) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 8 || dataLen > 207 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [8, 207] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
+	if utf8.RuneCountInString(record) != 201 {
+		return NewTagWrongLengthErr(201, len(record))
 	}
 	fiifi.tag = record[:6]
-
-	optionalFields := strings.Split(record[6:], "*")
-	fiifi.FIToFI.LineOne = fiifi.parseStringField(optionalFields[0])
-	if len(optionalFields) >= 2 {
-		fiifi.FIToFI.LineTwo = fiifi.parseStringField(optionalFields[1])
-	}
-	if len(optionalFields) >= 3 {
-		fiifi.FIToFI.LineThree = fiifi.parseStringField(optionalFields[2])
-	}
-	if len(optionalFields) >= 4 {
-		fiifi.FIToFI.LineFour = fiifi.parseStringField(optionalFields[3])
-	}
-	if len(optionalFields) >= 5 {
-		fiifi.FIToFI.LineFive = fiifi.parseStringField(optionalFields[4])
-	}
-	if len(optionalFields) >= 6 {
-		fiifi.FIToFI.LineSix = fiifi.parseStringField(optionalFields[5])
-	}
+	fiifi.FIToFI.LineOne = fiifi.parseStringField(record[6:36])
+	fiifi.FIToFI.LineTwo = fiifi.parseStringField(record[36:69])
+	fiifi.FIToFI.LineThree = fiifi.parseStringField(record[69:102])
+	fiifi.FIToFI.LineFour = fiifi.parseStringField(record[102:135])
+	fiifi.FIToFI.LineFive = fiifi.parseStringField(record[135:168])
+	fiifi.FIToFI.LineSix = fiifi.parseStringField(record[168:201])
 	return nil
 }
 
@@ -85,12 +68,12 @@ func (fiifi *FIIntermediaryFI) String() string {
 	var buf strings.Builder
 	buf.Grow(201)
 	buf.WriteString(fiifi.tag)
-	buf.WriteString(strings.TrimSpace(fiifi.LineOneField()) + "*")
-	buf.WriteString(strings.TrimSpace(fiifi.LineTwoField()) + "*")
-	buf.WriteString(strings.TrimSpace(fiifi.LineThreeField()) + "*")
-	buf.WriteString(strings.TrimSpace(fiifi.LineFourField()) + "*")
-	buf.WriteString(strings.TrimSpace(fiifi.LineFiveField()) + "*")
-	buf.WriteString(strings.TrimSpace(fiifi.LineSixField()) + "*")
+	buf.WriteString(fiifi.LineOneField())
+	buf.WriteString(fiifi.LineTwoField())
+	buf.WriteString(fiifi.LineThreeField())
+	buf.WriteString(fiifi.LineFourField())
+	buf.WriteString(fiifi.LineFiveField())
+	buf.WriteString(fiifi.LineSixField())
 	return buf.String()
 }
 

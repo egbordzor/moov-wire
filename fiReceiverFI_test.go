@@ -88,17 +88,17 @@ func TestFIReceiverFILineSixAlphaNumeric(t *testing.T) {
 
 // TestParseFIReceiverFIWrongLength parses a wrong FIReceiverFI record length
 func TestParseFIReceiverFIWrongLength(t *testing.T) {
-	var line = "{6100}"
+	var line = "{6100}Line Six                                                                                                                                                                                         "
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseFIReceiverFI()
-	require.EqualError(t, err, "line:0 record:FIReceiverFI wire.TagWrongLengthErr must be [8, 207] characters and found 6")
+	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(201, len(r.line))).Error())
 }
 
 // TestParseFIReceiverFIReaderParseError parses a wrong FIReceiverFI reader parse error
 func TestParseFIReceiverFIReaderParseError(t *testing.T) {
-	var line = "{6100}Line Si®*"
+	var line = "{6100}Line Si®                                                                                                                                                                                           "
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 

@@ -88,18 +88,18 @@ func TestFIBeneficiaryFILineSixAlphaNumeric(t *testing.T) {
 
 // TestParseFIBeneficiaryFIWrongLength parses a wrong FIBeneficiaryFI record length
 func TestParseFIBeneficiaryFIWrongLength(t *testing.T) {
-	var line = "{6300}*"
+	var line = "{6300}Line One                      Line Two                         Line Three                       Line Four                        Line Five                        Line Six                       "
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseFIBeneficiaryFI()
 
-	require.EqualError(t, err, "line:0 record:FIBeneficiaryFI wire.TagWrongLengthErr must be [8, 207] characters and found 7")
+	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(201, len(r.line))).Error())
 }
 
 // TestParseFIBeneficiaryFIReaderParseError parses a wrong FIBeneficiaryFI reader parse error
 func TestParseFIBeneficiaryFIReaderParseError(t *testing.T) {
-	var line = "{6300}Line ®ne                      *Line Two                         *Line Three                       *Line Four                        *Line Five                        *Line Six                         *"
+	var line = "{6300}Line ®ne                      Line Two                         Line Three                       Line Four                        Line Five                        Line Six                         "
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 

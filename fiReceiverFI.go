@@ -6,7 +6,6 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -37,32 +36,16 @@ func NewFIReceiverFI() *FIReceiverFI {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (firfi *FIReceiverFI) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 8 || dataLen > 207 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [8, 207] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
+	if utf8.RuneCountInString(record) != 201 {
+		return NewTagWrongLengthErr(201, len(record))
 	}
 	firfi.tag = record[:6]
-
-	optionalFields := strings.Split(record[6:], "*")
-	firfi.FIToFI.LineOne = firfi.parseStringField(optionalFields[0])
-	if len(optionalFields) >= 2 {
-		firfi.FIToFI.LineTwo = firfi.parseStringField(optionalFields[1])
-	}
-	if len(optionalFields) >= 3 {
-		firfi.FIToFI.LineThree = firfi.parseStringField(optionalFields[2])
-	}
-	if len(optionalFields) >= 4 {
-		firfi.FIToFI.LineFour = firfi.parseStringField(optionalFields[3])
-	}
-	if len(optionalFields) >= 5 {
-		firfi.FIToFI.LineFive = firfi.parseStringField(optionalFields[4])
-	}
-	if len(optionalFields) >= 6 {
-		firfi.FIToFI.LineSix = firfi.parseStringField(optionalFields[5])
-	}
+	firfi.FIToFI.LineOne = firfi.parseStringField(record[6:36])
+	firfi.FIToFI.LineTwo = firfi.parseStringField(record[36:69])
+	firfi.FIToFI.LineThree = firfi.parseStringField(record[69:102])
+	firfi.FIToFI.LineFour = firfi.parseStringField(record[102:135])
+	firfi.FIToFI.LineFive = firfi.parseStringField(record[135:168])
+	firfi.FIToFI.LineSix = firfi.parseStringField(record[174:201])
 	return nil
 }
 
@@ -85,12 +68,12 @@ func (firfi *FIReceiverFI) String() string {
 	var buf strings.Builder
 	buf.Grow(201)
 	buf.WriteString(firfi.tag)
-	buf.WriteString(strings.TrimSpace(firfi.LineOneField()) + "*")
-	buf.WriteString(strings.TrimSpace(firfi.LineTwoField()) + "*")
-	buf.WriteString(strings.TrimSpace(firfi.LineThreeField()) + "*")
-	buf.WriteString(strings.TrimSpace(firfi.LineFourField()) + "*")
-	buf.WriteString(strings.TrimSpace(firfi.LineFiveField()) + "*")
-	buf.WriteString(strings.TrimSpace(firfi.LineSixField()) + "*")
+	buf.WriteString(firfi.LineOneField())
+	buf.WriteString(firfi.LineTwoField())
+	buf.WriteString(firfi.LineThreeField())
+	buf.WriteString(firfi.LineFourField())
+	buf.WriteString(firfi.LineFiveField())
+	buf.WriteString(firfi.LineSixField())
 	return buf.String()
 }
 

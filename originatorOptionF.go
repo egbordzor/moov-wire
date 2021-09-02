@@ -6,7 +6,6 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -101,21 +100,15 @@ func NewOriginatorOptionF() *OriginatorOptionF {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (oof *OriginatorOptionF) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 13 || dataLen > 186 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [13, 186] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
+	if utf8.RuneCountInString(record) != 181 {
+		return NewTagWrongLengthErr(181, len(record))
 	}
 	oof.tag = oof.parseStringField(record[:6])
-
-	optionalFields := strings.Split(record[6:], "*")
-	oof.PartyIdentifier = oof.parseStringField(optionalFields[0])
-	oof.Name = oof.parseStringField(optionalFields[1])
-	oof.LineOne = oof.parseStringField(optionalFields[2])
-	oof.LineTwo = oof.parseStringField(optionalFields[3])
-	oof.LineThree = oof.parseStringField(optionalFields[4])
+	oof.PartyIdentifier = oof.parseStringField(record[6:41])
+	oof.Name = oof.parseStringField(record[41:76])
+	oof.LineOne = oof.parseStringField(record[76:111])
+	oof.LineTwo = oof.parseStringField(record[111:146])
+	oof.LineThree = oof.parseStringField(record[146:181])
 	return nil
 }
 
@@ -138,11 +131,11 @@ func (oof *OriginatorOptionF) String() string {
 	var buf strings.Builder
 	buf.Grow(181)
 	buf.WriteString(oof.tag)
-	buf.WriteString(strings.TrimSpace(oof.PartyIdentifierField()) + "*")
-	buf.WriteString(strings.TrimSpace(oof.NameField()) + "*")
-	buf.WriteString(strings.TrimSpace(oof.LineOneField()) + "*")
-	buf.WriteString(strings.TrimSpace(oof.LineTwoField()) + "*")
-	buf.WriteString(strings.TrimSpace(oof.LineThreeField()) + "*")
+	buf.WriteString(oof.PartyIdentifierField())
+	buf.WriteString(oof.NameField())
+	buf.WriteString(oof.LineOneField())
+	buf.WriteString(oof.LineTwoField())
+	buf.WriteString(oof.LineThreeField())
 	return buf.String()
 }
 
