@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,16 +37,33 @@ func NewOrderingInstitution() *OrderingInstitution {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (oi *OrderingInstitution) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 186 {
-		return NewTagWrongLengthErr(186, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 8 || dataLen > 192 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [8, 192] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	oi.tag = record[:6]
-	oi.CoverPayment.SwiftFieldTag = oi.parseStringField(record[6:11])
-	oi.CoverPayment.SwiftLineOne = oi.parseStringField(record[11:46])
-	oi.CoverPayment.SwiftLineTwo = oi.parseStringField(record[46:81])
-	oi.CoverPayment.SwiftLineThree = oi.parseStringField(record[81:116])
-	oi.CoverPayment.SwiftLineFour = oi.parseStringField(record[116:151])
-	oi.CoverPayment.SwiftLineFive = oi.parseStringField(record[151:186])
+	optionalFields := strings.Split(record[6:], "*")
+	if len(optionalFields) >= 1 {
+		oi.CoverPayment.SwiftFieldTag = oi.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		oi.CoverPayment.SwiftLineOne = oi.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		oi.CoverPayment.SwiftLineTwo = oi.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		oi.CoverPayment.SwiftLineThree = oi.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		oi.CoverPayment.SwiftLineFour = oi.parseStringField(optionalFields[4])
+	}
+	if len(optionalFields) >= 6 {
+		oi.CoverPayment.SwiftLineFive = oi.parseStringField(optionalFields[5])
+	}
 	return nil
 }
 
@@ -68,12 +86,12 @@ func (oi *OrderingInstitution) String() string {
 	var buf strings.Builder
 	buf.Grow(186)
 	buf.WriteString(oi.tag)
-	buf.WriteString(oi.SwiftFieldTagField())
-	buf.WriteString(oi.SwiftLineOneField())
-	buf.WriteString(oi.SwiftLineTwoField())
-	buf.WriteString(oi.SwiftLineThreeField())
-	buf.WriteString(oi.SwiftLineFourField())
-	buf.WriteString(oi.SwiftLineFiveField())
+	buf.WriteString(strings.TrimSpace(oi.SwiftFieldTagField()) + "*")
+	buf.WriteString(strings.TrimSpace(oi.SwiftLineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(oi.SwiftLineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(oi.SwiftLineThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(oi.SwiftLineFourField()) + "*")
+	buf.WriteString(strings.TrimSpace(oi.SwiftLineFiveField()) + "*")
 	return buf.String()
 }
 

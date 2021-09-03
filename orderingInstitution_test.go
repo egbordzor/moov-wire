@@ -98,18 +98,18 @@ func TestOrderingInstitutionSwiftLineSixAlphaNumeric(t *testing.T) {
 
 // TestParseOrderingInstitutionWrongLength parses a wrong OrderingInstitution record length
 func TestParseOrderingInstitutionWrongLength(t *testing.T) {
-	var line = "{7052}SwiftSwift Line One                     Swift Line Two                     Swift Line Three                   Swift Line Four                    Swift Line Five                  "
+	var line = "{7052}S"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseOrderingInstitution()
 
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(186, len(r.line))).Error())
+	require.EqualError(t, err, "line:0 record:OrderingInstitution wire.TagWrongLengthErr must be [8, 192] characters and found 7")
 }
 
 // TestParseOrderingInstitutionReaderParseError parses a wrong OrderingInstitution reader parse error
 func TestParseOrderingInstitutionReaderParseError(t *testing.T) {
-	var line = "{7052}SwiftSwift ®ine One                     Swift Line Two                     Swift Line Three                   Swift Line Four                    Swift Line Five                    "
+	var line = "{7052}Swift*Swift ®ine One*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 

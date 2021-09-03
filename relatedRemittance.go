@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -42,30 +43,76 @@ func NewRelatedRemittance() *RelatedRemittance {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (rr *RelatedRemittance) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 3041 {
-		return NewTagWrongLengthErr(3041, utf8.RuneCountInString(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 7 || dataLen > 3061 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [7, 3061] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	rr.tag = record[:6]
-	rr.RemittanceIdentification = rr.parseStringField(record[6:41])
-	rr.RemittanceLocationMethod = rr.parseStringField(record[41:45])
-	rr.RemittanceLocationElectronicAddress = rr.parseStringField(record[45:2093])
-	rr.RemittanceData.Name = rr.parseStringField(record[2093:2233])
-	rr.RemittanceData.AddressType = rr.parseStringField(record[2233:2237])
-	rr.RemittanceData.Department = rr.parseStringField(record[2237:2307])
-	rr.RemittanceData.SubDepartment = rr.parseStringField(record[2307:2377])
-	rr.RemittanceData.StreetName = rr.parseStringField(record[2377:2447])
-	rr.RemittanceData.BuildingNumber = rr.parseStringField(record[2447:2463])
-	rr.RemittanceData.PostCode = rr.parseStringField(record[2463:2479])
-	rr.RemittanceData.TownName = rr.parseStringField(record[2479:2514])
-	rr.RemittanceData.CountrySubDivisionState = rr.parseStringField(record[2514:2549])
-	rr.RemittanceData.Country = rr.parseStringField(record[2549:2551])
-	rr.RemittanceData.AddressLineOne = rr.parseStringField(record[2551:2621])
-	rr.RemittanceData.AddressLineTwo = rr.parseStringField(record[2621:2691])
-	rr.RemittanceData.AddressLineThree = rr.parseStringField(record[2691:2761])
-	rr.RemittanceData.AddressLineFour = rr.parseStringField(record[2761:2831])
-	rr.RemittanceData.AddressLineFive = rr.parseStringField(record[2831:2901])
-	rr.RemittanceData.AddressLineSix = rr.parseStringField(record[2901:2971])
-	rr.RemittanceData.AddressLineSeven = rr.parseStringField(record[2971:3041])
+
+	optionalFields := strings.Split(record[6:], "*")
+	if len(optionalFields) >= 1 {
+		rr.RemittanceIdentification = rr.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		rr.RemittanceLocationMethod = rr.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		rr.RemittanceLocationElectronicAddress = rr.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		rr.RemittanceData.Name = rr.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		rr.RemittanceData.AddressType = rr.parseStringField(optionalFields[4])
+	}
+	if len(optionalFields) >= 6 {
+		rr.RemittanceData.Department = rr.parseStringField(optionalFields[5])
+	}
+	if len(optionalFields) >= 7 {
+		rr.RemittanceData.SubDepartment = rr.parseStringField(optionalFields[6])
+	}
+	if len(optionalFields) >= 8 {
+		rr.RemittanceData.StreetName = rr.parseStringField(optionalFields[7])
+	}
+	if len(optionalFields) >= 9 {
+		rr.RemittanceData.BuildingNumber = rr.parseStringField(optionalFields[8])
+	}
+	if len(optionalFields) >= 10 {
+		rr.RemittanceData.PostCode = rr.parseStringField(optionalFields[9])
+	}
+	if len(optionalFields) >= 11 {
+		rr.RemittanceData.TownName = rr.parseStringField(optionalFields[10])
+	}
+	if len(optionalFields) >= 12 {
+		rr.RemittanceData.CountrySubDivisionState = rr.parseStringField(optionalFields[11])
+	}
+	if len(optionalFields) >= 13 {
+		rr.RemittanceData.Country = rr.parseStringField(optionalFields[12])
+	}
+	if len(optionalFields) >= 14 {
+		rr.RemittanceData.AddressLineOne = rr.parseStringField(optionalFields[13])
+	}
+	if len(optionalFields) >= 15 {
+		rr.RemittanceData.AddressLineTwo = rr.parseStringField(optionalFields[14])
+	}
+	if len(optionalFields) >= 16 {
+		rr.RemittanceData.AddressLineThree = rr.parseStringField(optionalFields[15])
+	}
+	if len(optionalFields) >= 17 {
+		rr.RemittanceData.AddressLineFour = rr.parseStringField(optionalFields[16])
+	}
+	if len(optionalFields) >= 18 {
+		rr.RemittanceData.AddressLineFive = rr.parseStringField(optionalFields[17])
+	}
+	if len(optionalFields) >= 19 {
+		rr.RemittanceData.AddressLineSix = rr.parseStringField(optionalFields[18])
+	}
+	if len(optionalFields) >= 20 {
+		rr.RemittanceData.AddressLineSeven = rr.parseStringField(optionalFields[19])
+	}
 	return nil
 }
 
@@ -88,26 +135,26 @@ func (rr *RelatedRemittance) String() string {
 	var buf strings.Builder
 	buf.Grow(3041)
 	buf.WriteString(rr.tag)
-	buf.WriteString(rr.RemittanceIdentificationField())
-	buf.WriteString(rr.RemittanceLocationMethodField())
-	buf.WriteString(rr.RemittanceLocationElectronicAddressField())
-	buf.WriteString(rr.NameField())
-	buf.WriteString(rr.AddressTypeField())
-	buf.WriteString(rr.DepartmentField())
-	buf.WriteString(rr.SubDepartmentField())
-	buf.WriteString(rr.StreetNameField())
-	buf.WriteString(rr.BuildingNumberField())
-	buf.WriteString(rr.PostCodeField())
-	buf.WriteString(rr.TownNameField())
-	buf.WriteString(rr.CountrySubDivisionStateField())
-	buf.WriteString(rr.CountryField())
-	buf.WriteString(rr.AddressLineOneField())
-	buf.WriteString(rr.AddressLineTwoField())
-	buf.WriteString(rr.AddressLineThreeField())
-	buf.WriteString(rr.AddressLineFourField())
-	buf.WriteString(rr.AddressLineFiveField())
-	buf.WriteString(rr.AddressLineSixField())
-	buf.WriteString(rr.AddressLineSevenField())
+	buf.WriteString(strings.TrimSpace(rr.RemittanceIdentificationField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.RemittanceLocationMethodField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.RemittanceLocationElectronicAddressField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.NameField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.AddressTypeField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.DepartmentField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.SubDepartmentField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.StreetNameField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.BuildingNumberField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.PostCodeField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.TownNameField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.CountrySubDivisionStateField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.CountryField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.AddressLineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.AddressLineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.AddressLineThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.AddressLineFourField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.AddressLineFiveField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.AddressLineSixField()) + "*")
+	buf.WriteString(strings.TrimSpace(rr.AddressLineSevenField()) + "*")
 	return buf.String()
 }
 
@@ -189,9 +236,6 @@ func (rr *RelatedRemittance) Validate() error {
 // fieldInclusion validate mandatory fields. If fields are
 // invalid the WIRE will return an error.
 func (rr *RelatedRemittance) fieldInclusion() error {
-	if rr.RemittanceData.Name == "" {
-		return fieldError("Name", ErrFieldRequired)
-	}
 	return nil
 }
 

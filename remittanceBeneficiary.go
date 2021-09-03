@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -44,33 +45,85 @@ func NewRemittanceBeneficiary() *RemittanceBeneficiary {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (rb *RemittanceBeneficiary) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 1114 {
-		return NewTagWrongLengthErr(1114, utf8.RuneCountInString(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 8 || dataLen > 1137 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [8, 1137] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	rb.tag = record[:6]
-	rb.RemittanceData.Name = rb.parseStringField(record[6:146])
-	rb.IdentificationType = rb.parseStringField(record[146:148])
-	rb.IdentificationCode = rb.parseStringField(record[148:152])
-	rb.IdentificationNumber = rb.parseStringField(record[152:187])
-	rb.IdentificationNumberIssuer = rb.parseStringField(record[187:222])
-	rb.RemittanceData.DateBirthPlace = rb.parseStringField(record[222:304])
-	rb.RemittanceData.AddressType = rb.parseStringField(record[304:308])
-	rb.RemittanceData.Department = rb.parseStringField(record[308:378])
-	rb.RemittanceData.SubDepartment = rb.parseStringField(record[378:448])
-	rb.RemittanceData.StreetName = rb.parseStringField(record[448:518])
-	rb.RemittanceData.BuildingNumber = rb.parseStringField(record[518:534])
-	rb.RemittanceData.PostCode = rb.parseStringField(record[534:550])
-	rb.RemittanceData.TownName = rb.parseStringField(record[550:585])
-	rb.RemittanceData.CountrySubDivisionState = rb.parseStringField(record[585:620])
-	rb.RemittanceData.Country = rb.parseStringField(record[620:622])
-	rb.RemittanceData.AddressLineOne = rb.parseStringField(record[622:692])
-	rb.RemittanceData.AddressLineTwo = rb.parseStringField(record[692:762])
-	rb.RemittanceData.AddressLineThree = rb.parseStringField(record[762:832])
-	rb.RemittanceData.AddressLineFour = rb.parseStringField(record[832:902])
-	rb.RemittanceData.AddressLineFive = rb.parseStringField(record[902:972])
-	rb.RemittanceData.AddressLineSix = rb.parseStringField(record[972:1042])
-	rb.RemittanceData.AddressLineSeven = rb.parseStringField(record[1042:1112])
-	rb.RemittanceData.CountryOfResidence = rb.parseStringField(record[1112:1114])
+
+	optionalFields := strings.Split(record[6:], "*")
+	if len(optionalFields) >= 1 {
+		rb.RemittanceData.Name = rb.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		rb.IdentificationType = rb.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		rb.IdentificationCode = rb.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		rb.IdentificationNumber = rb.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		rb.IdentificationNumberIssuer = rb.parseStringField(optionalFields[4])
+	}
+	if len(optionalFields) >= 6 {
+		rb.RemittanceData.DateBirthPlace = rb.parseStringField(optionalFields[5])
+	}
+	if len(optionalFields) >= 7 {
+		rb.RemittanceData.AddressType = rb.parseStringField(optionalFields[6])
+	}
+	if len(optionalFields) >= 8 {
+		rb.RemittanceData.Department = rb.parseStringField(optionalFields[7])
+	}
+	if len(optionalFields) >= 9 {
+		rb.RemittanceData.SubDepartment = rb.parseStringField(optionalFields[8])
+	}
+	if len(optionalFields) >= 10 {
+		rb.RemittanceData.StreetName = rb.parseStringField(optionalFields[9])
+	}
+	if len(optionalFields) >= 11 {
+		rb.RemittanceData.BuildingNumber = rb.parseStringField(optionalFields[10])
+	}
+	if len(optionalFields) >= 12 {
+		rb.RemittanceData.PostCode = rb.parseStringField(optionalFields[11])
+	}
+	if len(optionalFields) >= 13 {
+		rb.RemittanceData.TownName = rb.parseStringField(optionalFields[12])
+	}
+	if len(optionalFields) >= 14 {
+		rb.RemittanceData.CountrySubDivisionState = rb.parseStringField(optionalFields[13])
+	}
+	if len(optionalFields) >= 15 {
+		rb.RemittanceData.Country = rb.parseStringField(optionalFields[14])
+	}
+	if len(optionalFields) >= 16 {
+		rb.RemittanceData.AddressLineOne = rb.parseStringField(optionalFields[15])
+	}
+	if len(optionalFields) >= 17 {
+		rb.RemittanceData.AddressLineTwo = rb.parseStringField(optionalFields[16])
+	}
+	if len(optionalFields) >= 18 {
+		rb.RemittanceData.AddressLineThree = rb.parseStringField(optionalFields[17])
+	}
+	if len(optionalFields) >= 19 {
+		rb.RemittanceData.AddressLineFour = rb.parseStringField(optionalFields[18])
+	}
+	if len(optionalFields) >= 20 {
+		rb.RemittanceData.AddressLineFive = rb.parseStringField(optionalFields[19])
+	}
+	if len(optionalFields) >= 21 {
+		rb.RemittanceData.AddressLineSix = rb.parseStringField(optionalFields[20])
+	}
+	if len(optionalFields) >= 22 {
+		rb.RemittanceData.AddressLineSeven = rb.parseStringField(optionalFields[21])
+	}
+	if len(optionalFields) >= 23 {
+		rb.RemittanceData.CountryOfResidence = rb.parseStringField(optionalFields[22])
+	}
 	return nil
 }
 
@@ -93,29 +146,31 @@ func (rb *RemittanceBeneficiary) String() string {
 	var buf strings.Builder
 	buf.Grow(1114)
 	buf.WriteString(rb.tag)
-	buf.WriteString(rb.NameField())
-	buf.WriteString(rb.IdentificationTypeField())
-	buf.WriteString(rb.IdentificationCodeField())
-	buf.WriteString(rb.IdentificationNumberField())
-	buf.WriteString(rb.IdentificationNumberIssuerField())
-	buf.WriteString(rb.DateBirthPlaceField())
-	buf.WriteString(rb.AddressTypeField())
-	buf.WriteString(rb.DepartmentField())
-	buf.WriteString(rb.SubDepartmentField())
-	buf.WriteString(rb.StreetNameField())
-	buf.WriteString(rb.BuildingNumberField())
-	buf.WriteString(rb.PostCodeField())
-	buf.WriteString(rb.TownNameField())
-	buf.WriteString(rb.CountrySubDivisionStateField())
-	buf.WriteString(rb.CountryField())
-	buf.WriteString(rb.AddressLineOneField())
-	buf.WriteString(rb.AddressLineTwoField())
-	buf.WriteString(rb.AddressLineThreeField())
-	buf.WriteString(rb.AddressLineFourField())
-	buf.WriteString(rb.AddressLineFiveField())
-	buf.WriteString(rb.AddressLineSixField())
-	buf.WriteString(rb.AddressLineSevenField())
-	buf.WriteString(rb.CountryOfResidenceField())
+	buf.WriteString(strings.TrimSpace(rb.NameField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.IdentificationTypeField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.IdentificationCodeField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.IdentificationNumberField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.IdentificationNumberIssuerField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.DateBirthPlaceField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.AddressTypeField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.DepartmentField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.SubDepartmentField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.StreetNameField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.BuildingNumberField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.PostCodeField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.TownNameField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.CountrySubDivisionStateField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.CountryField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.AddressLineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.AddressLineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.AddressLineThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.AddressLineFourField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.AddressLineFiveField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.AddressLineSixField()) + "*")
+	buf.WriteString(strings.TrimSpace(rb.AddressLineSevenField()) + "*")
+	if rb.RemittanceData.CountryOfResidence != "" {
+		buf.WriteString(strings.TrimSpace(rb.CountryOfResidenceField()) + "*")
+	}
 	return buf.String()
 }
 

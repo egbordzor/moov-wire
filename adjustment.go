@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -42,15 +43,25 @@ func NewAdjustment() *Adjustment {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (adj *Adjustment) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 174 {
-		return NewTagWrongLengthErr(174, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 18 || dataLen > 176 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [18, 176] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	adj.tag = record[:6]
 	adj.AdjustmentReasonCode = adj.parseStringField(record[6:8])
 	adj.CreditDebitIndicator = adj.parseStringField(record[8:12])
 	adj.RemittanceAmount.CurrencyCode = adj.parseStringField(record[12:15])
-	adj.RemittanceAmount.Amount = adj.parseStringField(record[15:34])
-	adj.AdditionalInfo = adj.parseStringField(record[34:174])
+
+	optionalFields := strings.Split(record[15:], "*")
+	if len(optionalFields) >= 1 {
+		adj.RemittanceAmount.Amount = adj.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		adj.AdditionalInfo = adj.parseStringField(optionalFields[1])
+	}
 	return nil
 }
 
@@ -76,8 +87,8 @@ func (adj *Adjustment) String() string {
 	buf.WriteString(adj.AdjustmentReasonCodeField())
 	buf.WriteString(adj.CreditDebitIndicatorField())
 	buf.WriteString(adj.CurrencyCodeField())
-	buf.WriteString(adj.AmountField())
-	buf.WriteString(adj.AdditionalInfoField())
+	buf.WriteString(strings.TrimSpace(adj.AmountField()) + "*")
+	buf.WriteString(strings.TrimSpace(adj.AdditionalInfoField()) + "*")
 	return buf.String()
 }
 

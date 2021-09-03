@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -56,39 +57,100 @@ func NewRemittanceOriginator() *RemittanceOriginator {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (ro *RemittanceOriginator) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 3442 {
-		return NewTagWrongLengthErr(3442, utf8.RuneCountInString(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 14 || dataLen > 3469 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [14, 3469] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
+
 	ro.tag = record[:6]
 	ro.IdentificationType = ro.parseStringField(record[6:8])
 	ro.IdentificationCode = ro.parseStringField(record[8:12])
-	ro.RemittanceData.Name = ro.parseStringField(record[12:152])
-	ro.IdentificationNumber = ro.parseStringField(record[152:187])
-	ro.IdentificationNumberIssuer = ro.parseStringField(record[187:222])
-	ro.RemittanceData.DateBirthPlace = ro.parseStringField(record[222:304])
-	ro.RemittanceData.AddressType = ro.parseStringField(record[304:308])
-	ro.RemittanceData.Department = ro.parseStringField(record[308:378])
-	ro.RemittanceData.SubDepartment = ro.parseStringField(record[378:448])
-	ro.RemittanceData.StreetName = ro.parseStringField(record[448:518])
-	ro.RemittanceData.BuildingNumber = ro.parseStringField(record[518:534])
-	ro.RemittanceData.PostCode = ro.parseStringField(record[534:550])
-	ro.RemittanceData.TownName = ro.parseStringField(record[550:585])
-	ro.RemittanceData.CountrySubDivisionState = ro.parseStringField(record[585:620])
-	ro.RemittanceData.Country = ro.parseStringField(record[620:622])
-	ro.RemittanceData.AddressLineOne = ro.parseStringField(record[622:692])
-	ro.RemittanceData.AddressLineTwo = ro.parseStringField(record[692:762])
-	ro.RemittanceData.AddressLineThree = ro.parseStringField(record[762:832])
-	ro.RemittanceData.AddressLineFour = ro.parseStringField(record[832:902])
-	ro.RemittanceData.AddressLineFive = ro.parseStringField(record[902:972])
-	ro.RemittanceData.AddressLineSix = ro.parseStringField(record[972:1042])
-	ro.RemittanceData.AddressLineSeven = ro.parseStringField(record[1042:1112])
-	ro.RemittanceData.CountryOfResidence = ro.parseStringField(record[1112:1114])
-	ro.ContactName = ro.parseStringField(record[1114:1254])
-	ro.ContactPhoneNumber = ro.parseStringField(record[1254:1289])
-	ro.ContactMobileNumber = ro.parseStringField(record[1289:1324])
-	ro.ContactFaxNumber = ro.parseStringField(record[1324:1359])
-	ro.ContactElectronicAddress = ro.parseStringField(record[1359:3407])
-	ro.ContactOther = ro.parseStringField(record[3407:3442])
+
+	optionalFields := strings.Split(record[12:], "*")
+	if len(optionalFields) >= 1 {
+		ro.RemittanceData.Name = ro.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		ro.IdentificationNumber = ro.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		ro.IdentificationNumberIssuer = ro.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		ro.RemittanceData.DateBirthPlace = ro.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		ro.RemittanceData.AddressType = ro.parseStringField(optionalFields[4])
+	}
+	if len(optionalFields) >= 6 {
+		ro.RemittanceData.Department = ro.parseStringField(optionalFields[5])
+	}
+	if len(optionalFields) >= 7 {
+		ro.RemittanceData.SubDepartment = ro.parseStringField(optionalFields[6])
+	}
+	if len(optionalFields) >= 8 {
+		ro.RemittanceData.StreetName = ro.parseStringField(optionalFields[7])
+	}
+	if len(optionalFields) >= 9 {
+		ro.RemittanceData.BuildingNumber = ro.parseStringField(optionalFields[8])
+	}
+	if len(optionalFields) >= 10 {
+		ro.RemittanceData.PostCode = ro.parseStringField(optionalFields[9])
+	}
+	if len(optionalFields) >= 11 {
+		ro.RemittanceData.TownName = ro.parseStringField(optionalFields[10])
+	}
+	if len(optionalFields) >= 12 {
+		ro.RemittanceData.CountrySubDivisionState = ro.parseStringField(optionalFields[11])
+	}
+	if len(optionalFields) >= 13 {
+		ro.RemittanceData.Country = ro.parseStringField(optionalFields[12])
+	}
+	if len(optionalFields) >= 14 {
+		ro.RemittanceData.AddressLineOne = ro.parseStringField(optionalFields[13])
+	}
+	if len(optionalFields) >= 15 {
+		ro.RemittanceData.AddressLineTwo = ro.parseStringField(optionalFields[14])
+	}
+	if len(optionalFields) >= 16 {
+		ro.RemittanceData.AddressLineThree = ro.parseStringField(optionalFields[15])
+	}
+	if len(optionalFields) >= 17 {
+		ro.RemittanceData.AddressLineFour = ro.parseStringField(optionalFields[16])
+	}
+	if len(optionalFields) >= 18 {
+		ro.RemittanceData.AddressLineFive = ro.parseStringField(optionalFields[17])
+	}
+	if len(optionalFields) >= 19 {
+		ro.RemittanceData.AddressLineSix = ro.parseStringField(optionalFields[18])
+	}
+	if len(optionalFields) >= 20 {
+		ro.RemittanceData.AddressLineSeven = ro.parseStringField(optionalFields[19])
+	}
+	if len(optionalFields) >= 21 {
+		ro.RemittanceData.CountryOfResidence = ro.parseStringField(optionalFields[20])
+	}
+	if len(optionalFields) >= 22 {
+		ro.ContactName = ro.parseStringField(optionalFields[21])
+	}
+	if len(optionalFields) >= 23 {
+		ro.ContactPhoneNumber = ro.parseStringField(optionalFields[22])
+	}
+	if len(optionalFields) >= 24 {
+		ro.ContactMobileNumber = ro.parseStringField(optionalFields[23])
+	}
+	if len(optionalFields) >= 25 {
+		ro.ContactFaxNumber = ro.parseStringField(optionalFields[24])
+	}
+	if len(optionalFields) >= 26 {
+		ro.ContactElectronicAddress = ro.parseStringField(optionalFields[25])
+	}
+	if len(optionalFields) >= 27 {
+		ro.ContactOther = ro.parseStringField(optionalFields[26])
+	}
 	return nil
 }
 
@@ -113,33 +175,33 @@ func (ro *RemittanceOriginator) String() string {
 	buf.WriteString(ro.tag)
 	buf.WriteString(ro.IdentificationTypeField())
 	buf.WriteString(ro.IdentificationCodeField())
-	buf.WriteString(ro.NameField())
-	buf.WriteString(ro.IdentificationNumberField())
-	buf.WriteString(ro.IdentificationNumberIssuerField())
-	buf.WriteString(ro.DateBirthPlaceField())
-	buf.WriteString(ro.AddressTypeField())
-	buf.WriteString(ro.DepartmentField())
-	buf.WriteString(ro.SubDepartmentField())
-	buf.WriteString(ro.StreetNameField())
-	buf.WriteString(ro.BuildingNumberField())
-	buf.WriteString(ro.PostCodeField())
-	buf.WriteString(ro.TownNameField())
-	buf.WriteString(ro.CountrySubDivisionStateField())
-	buf.WriteString(ro.CountryField())
-	buf.WriteString(ro.AddressLineOneField())
-	buf.WriteString(ro.AddressLineTwoField())
-	buf.WriteString(ro.AddressLineThreeField())
-	buf.WriteString(ro.AddressLineFourField())
-	buf.WriteString(ro.AddressLineFiveField())
-	buf.WriteString(ro.AddressLineSixField())
-	buf.WriteString(ro.AddressLineSevenField())
-	buf.WriteString(ro.CountryOfResidenceField())
-	buf.WriteString(ro.ContactNameField())
-	buf.WriteString(ro.ContactPhoneNumberField())
-	buf.WriteString(ro.ContactMobileNumberField())
-	buf.WriteString(ro.ContactFaxNumberField())
-	buf.WriteString(ro.ContactElectronicAddressField())
-	buf.WriteString(ro.ContactOtherField())
+	buf.WriteString(strings.TrimSpace(ro.NameField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.IdentificationNumberField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.IdentificationNumberIssuerField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.DateBirthPlaceField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.AddressTypeField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.DepartmentField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.SubDepartmentField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.StreetNameField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.BuildingNumberField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.PostCodeField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.TownNameField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.CountrySubDivisionStateField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.CountryField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.AddressLineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.AddressLineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.AddressLineThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.AddressLineFourField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.AddressLineFiveField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.AddressLineSixField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.AddressLineSevenField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.CountryOfResidenceField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.ContactNameField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.ContactPhoneNumberField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.ContactMobileNumberField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.ContactFaxNumberField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.ContactElectronicAddressField()) + "*")
+	buf.WriteString(strings.TrimSpace(ro.ContactOtherField()) + "*")
 	return buf.String()
 }
 

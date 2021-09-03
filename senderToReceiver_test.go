@@ -99,18 +99,18 @@ func TestSenderToReceiverSwiftLineSixAlphaNumeric(t *testing.T) {
 
 // TestParseSenderToReceiverWrongLength parses a wrong SenderToReceiver record length
 func TestParseSenderToReceiverWrongLength(t *testing.T) {
-	var line = "{7072}SwiftSwift Line One                     Swift Line Two                     Swift Line Three                   Swift Line Four                    Swift Line Five                    Swift Line Six                   "
+	var line = "{7072}S"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseSenderToReceiver()
 
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(221, len(r.line))).Error())
+	require.EqualError(t, err, "line:0 record:SenderToReceiver wire.TagWrongLengthErr must be [8, 228] characters and found 7")
 }
 
 // TestParseSenderToReceiverReaderParseError parses a wrong SenderToReceiver reader parse error
 func TestParseSenderToReceiverReaderParseError(t *testing.T) {
-	var line = "{7072}Swift®wift Line One                     Swift Line Two                     Swift Line Three                   Swift Line Four                    Swift Line Five                    Swift Line Six                     "
+	var line = "{7072}Swift*®wift Line One"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 

@@ -107,18 +107,18 @@ func TestAdjustmentCurrencyCodeRequired(t *testing.T) {
 
 // TestParseAdjustmentWrongLength parses a wrong Adjustment record length
 func TestParseAdjustmentWrongLength(t *testing.T) {
-	var line = "{8600}01CRDTUSD1234.56Z             Adjustment Additional Information                                                                                                       "
+	var line = "{8600}01CRDTUSD12"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseAdjustment()
 
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(174, len(r.line))).Error())
+	require.EqualError(t, err, "line:0 record:Adjustment wire.TagWrongLengthErr must be [18, 176] characters and found 17")
 }
 
 // TestParseAdjustmentReaderParseError parses a wrong Adjustment reader parse error
 func TestParseAdjustmentReaderParseError(t *testing.T) {
-	var line = "{8600}01CRDTUSD1234.56Z             Adjustment Additional Information                                                                                                         "
+	var line = "{8600}01CRDTUSD1234.56Z*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 

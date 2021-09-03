@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -40,13 +41,25 @@ func NewRemittanceFreeText() *RemittanceFreeText {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (rft *RemittanceFreeText) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 426 {
-		return NewTagWrongLengthErr(426, utf8.RuneCountInString(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 8 || dataLen > 429 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [8, 429] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	rft.tag = record[:6]
-	rft.LineOne = rft.parseStringField(record[6:146])
-	rft.LineTwo = rft.parseStringField(record[146:286])
-	rft.LineThree = rft.parseStringField(record[286:426])
+
+	optionalFields := strings.Split(record[6:], "*")
+	if len(optionalFields) >= 1 {
+		rft.LineOne = rft.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		rft.LineTwo = rft.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		rft.LineThree = rft.parseStringField(optionalFields[2])
+	}
 	return nil
 }
 
@@ -69,9 +82,9 @@ func (rft *RemittanceFreeText) String() string {
 	var buf strings.Builder
 	buf.Grow(426)
 	buf.WriteString(rft.tag)
-	buf.WriteString(rft.LineOneField())
-	buf.WriteString(rft.LineTwoField())
-	buf.WriteString(rft.LineThreeField())
+	buf.WriteString(strings.TrimSpace(rft.LineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(rft.LineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(rft.LineThreeField()) + "*")
 	return buf.String()
 }
 

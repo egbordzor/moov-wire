@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,12 +37,20 @@ func NewGrossAmountRemittanceDocument() *GrossAmountRemittanceDocument {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (gard *GrossAmountRemittanceDocument) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 28 {
-		return NewTagWrongLengthErr(28, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 13 || dataLen > 29 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [13, 29] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	gard.tag = record[:6]
 	gard.RemittanceAmount.CurrencyCode = gard.parseStringField(record[6:9])
-	gard.RemittanceAmount.Amount = gard.parseStringField(record[9:28])
+	if delim := strings.IndexByte(record, '*'); delim > 0 {
+		gard.RemittanceAmount.Amount = gard.parseStringField(record[9:delim])
+	} else {
+		gard.RemittanceAmount.Amount = gard.parseStringField(record[9:])
+	}
 	return nil
 }
 
@@ -65,7 +74,7 @@ func (gard *GrossAmountRemittanceDocument) String() string {
 	buf.Grow(28)
 	buf.WriteString(gard.tag)
 	buf.WriteString(gard.CurrencyCodeField())
-	buf.WriteString(gard.AmountField())
+	buf.WriteString(strings.TrimSpace(gard.AmountField()))
 	return buf.String()
 }
 

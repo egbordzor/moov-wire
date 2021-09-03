@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,15 +37,31 @@ func NewRemittance() *Remittance {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (ri *Remittance) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 151 {
-		return NewTagWrongLengthErr(151, utf8.RuneCountInString(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 8 || dataLen > 156 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [8, 156] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	ri.tag = record[:6]
-	ri.CoverPayment.SwiftFieldTag = ri.parseStringField(record[6:11])
-	ri.CoverPayment.SwiftLineOne = ri.parseStringField(record[11:46])
-	ri.CoverPayment.SwiftLineTwo = ri.parseStringField(record[46:81])
-	ri.CoverPayment.SwiftLineThree = ri.parseStringField(record[81:116])
-	ri.CoverPayment.SwiftLineFour = ri.parseStringField(record[116:151])
+
+	optionalFields := strings.Split(record[6:], "*")
+	if len(optionalFields) >= 1 {
+		ri.CoverPayment.SwiftFieldTag = ri.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		ri.CoverPayment.SwiftLineOne = ri.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		ri.CoverPayment.SwiftLineTwo = ri.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		ri.CoverPayment.SwiftLineThree = ri.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		ri.CoverPayment.SwiftLineFour = ri.parseStringField(optionalFields[4])
+	}
 	return nil
 }
 
@@ -65,13 +82,13 @@ func (ri *Remittance) UnmarshalJSON(data []byte) error {
 // String writes Remittance
 func (ri *Remittance) String() string {
 	var buf strings.Builder
-	buf.Grow(151)
+	buf.Grow(156)
 	buf.WriteString(ri.tag)
-	buf.WriteString(ri.SwiftFieldTagField())
-	buf.WriteString(ri.SwiftLineOneField())
-	buf.WriteString(ri.SwiftLineTwoField())
-	buf.WriteString(ri.SwiftLineThreeField())
-	buf.WriteString(ri.SwiftLineFourField())
+	buf.WriteString(strings.TrimSpace(ri.SwiftFieldTagField()) + "*")
+	buf.WriteString(strings.TrimSpace(ri.SwiftLineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(ri.SwiftLineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(ri.SwiftLineThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(ri.SwiftLineFourField()) + "*")
 	return buf.String()
 }
 

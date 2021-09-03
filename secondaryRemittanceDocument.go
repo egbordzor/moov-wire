@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -42,14 +43,26 @@ func NewSecondaryRemittanceDocument() *SecondaryRemittanceDocument {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (srd *SecondaryRemittanceDocument) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 115 {
-		return NewTagWrongLengthErr(115, utf8.RuneCountInString(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 10 || dataLen > 118 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [10, 118] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	srd.tag = record[:6]
 	srd.DocumentTypeCode = srd.parseStringField(record[6:10])
-	srd.ProprietaryDocumentTypeCode = srd.parseStringField(record[10:45])
-	srd.DocumentIdentificationNumber = srd.parseStringField(record[45:80])
-	srd.Issuer = srd.parseStringField(record[80:115])
+
+	optionalFields := strings.Split(record[10:], "*")
+	if len(optionalFields) >= 1 {
+		srd.ProprietaryDocumentTypeCode = srd.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		srd.DocumentIdentificationNumber = srd.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		srd.Issuer = srd.parseStringField(optionalFields[2])
+	}
 	return nil
 }
 
@@ -73,9 +86,9 @@ func (srd *SecondaryRemittanceDocument) String() string {
 	buf.Grow(115)
 	buf.WriteString(srd.tag)
 	buf.WriteString(srd.DocumentTypeCodeField())
-	buf.WriteString(srd.ProprietaryDocumentTypeCodeField())
-	buf.WriteString(srd.DocumentIdentificationNumberField())
-	buf.WriteString(srd.IssuerField())
+	buf.WriteString(strings.TrimSpace(srd.ProprietaryDocumentTypeCodeField()) + "*")
+	buf.WriteString(strings.TrimSpace(srd.DocumentIdentificationNumberField()) + "*")
+	buf.WriteString(strings.TrimSpace(srd.IssuerField()) + "*")
 	return buf.String()
 }
 

@@ -38,9 +38,9 @@ func NewOriginator() *Originator {
 // successful parsing and data validity.
 func (o *Originator) Parse(record string) error {
 	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 12 || dataLen > 186 {
+	if dataLen < 7 || dataLen > 186 {
 		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [12, 186] characters and found %d", dataLen),
+			Message: fmt.Sprintf("must be [7, 186] characters and found %d", dataLen),
 			Length:  dataLen,
 		}
 	}

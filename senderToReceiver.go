@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,17 +37,37 @@ func NewSenderToReceiver() *SenderToReceiver {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (str *SenderToReceiver) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 221 {
-		return NewTagWrongLengthErr(221, utf8.RuneCountInString(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 8 || dataLen > 228 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [8, 228] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	str.tag = record[:6]
-	str.CoverPayment.SwiftFieldTag = str.parseStringField(record[6:11])
-	str.CoverPayment.SwiftLineOne = str.parseStringField(record[11:46])
-	str.CoverPayment.SwiftLineTwo = str.parseStringField(record[46:81])
-	str.CoverPayment.SwiftLineThree = str.parseStringField(record[81:116])
-	str.CoverPayment.SwiftLineFour = str.parseStringField(record[116:151])
-	str.CoverPayment.SwiftLineFive = str.parseStringField(record[151:186])
-	str.CoverPayment.SwiftLineSix = str.parseStringField(record[186:221])
+
+	optionalFields := strings.Split(record[6:], "*")
+	if len(optionalFields) >= 1 {
+		str.CoverPayment.SwiftFieldTag = str.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		str.CoverPayment.SwiftLineOne = str.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		str.CoverPayment.SwiftLineTwo = str.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		str.CoverPayment.SwiftLineThree = str.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		str.CoverPayment.SwiftLineFour = str.parseStringField(optionalFields[4])
+	}
+	if len(optionalFields) >= 6 {
+		str.CoverPayment.SwiftLineFive = str.parseStringField(optionalFields[5])
+	}
+	if len(optionalFields) >= 7 {
+		str.CoverPayment.SwiftLineSix = str.parseStringField(optionalFields[6])
+	}
 	return nil
 }
 
@@ -69,13 +90,13 @@ func (str *SenderToReceiver) String() string {
 	var buf strings.Builder
 	buf.Grow(221)
 	buf.WriteString(str.tag)
-	buf.WriteString(str.SwiftFieldTagField())
-	buf.WriteString(str.SwiftLineOneField())
-	buf.WriteString(str.SwiftLineTwoField())
-	buf.WriteString(str.SwiftLineThreeField())
-	buf.WriteString(str.SwiftLineFourField())
-	buf.WriteString(str.SwiftLineFiveField())
-	buf.WriteString(str.SwiftLineSixField())
+	buf.WriteString(strings.TrimSpace(str.SwiftFieldTagField()) + "*")
+	buf.WriteString(strings.TrimSpace(str.SwiftLineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(str.SwiftLineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(str.SwiftLineThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(str.SwiftLineFourField()) + "*")
+	buf.WriteString(strings.TrimSpace(str.SwiftLineFiveField()) + "*")
+	buf.WriteString(strings.TrimSpace(str.SwiftLineSixField()) + "*")
 	return buf.String()
 }
 
