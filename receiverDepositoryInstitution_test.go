@@ -52,16 +52,6 @@ func TestReceiverABANumberRequired(t *testing.T) {
 	require.EqualError(t, err, fieldError("ReceiverABANumber", ErrFieldRequired, rdi.ReceiverABANumber).Error())
 }
 
-// TestReceiverShortNameRequired validates ReceiverDepositoryInstitution ReceiverShortName is required
-func TestReceiverShortNameRequired(t *testing.T) {
-	rdi := mockReceiverDepositoryInstitution()
-	rdi.ReceiverShortName = ""
-
-	err := rdi.Validate()
-
-	require.EqualError(t, err, fieldError("ReceiverShortName", ErrFieldRequired, rdi.ReceiverShortName).Error())
-}
-
 // TestParseReceiverWrongLength parses a wrong Receiver record length
 func TestParseReceiverWrongLength(t *testing.T) {
 	var line = "{3400}00"

@@ -52,7 +52,7 @@ func scanTags(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	if atEOF && len(data) == 0 {
 		return 0, nil, nil
 	}
-	re := regexp.MustCompile(`[^^]\{\d{4}\}[^\*]`)
+	re := regexp.MustCompile(`[^^]\{\d{4}\}[^\*\{]`)
 	if loc := re.FindIndex(data); loc != nil {
 		return loc[0] + 1, data[0 : loc[0]+1], nil
 	}

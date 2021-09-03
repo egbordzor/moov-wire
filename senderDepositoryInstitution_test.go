@@ -55,16 +55,6 @@ func TestSenderABANumberRequired(t *testing.T) {
 	require.EqualError(t, err, fieldError("SenderABANumber", ErrFieldRequired, rdi.SenderABANumber).Error())
 }
 
-// TestSenderShortNameRequired validates SenderDepositoryInstitution SenderShortName is required
-func TestSenderShortNameRequired(t *testing.T) {
-	rdi := mockSenderDepositoryInstitution()
-	rdi.SenderShortName = ""
-
-	err := rdi.Validate()
-
-	require.EqualError(t, err, fieldError("SenderShortName", ErrFieldRequired, rdi.SenderShortName).Error())
-}
-
 // TestParseSenderWrongLength parses a wrong Sender record length
 func TestParseSenderWrongLength(t *testing.T) {
 	var line = "{3100}0012*"
