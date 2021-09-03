@@ -223,9 +223,9 @@ func (fwm *FEDWireMessage) mandatoryFields() error {
 }
 
 // validateSenderSupplied validates TagSenderSupplied within a FEDWireMessage
-// Mandatory for all requests
+// Mandatory for all outbound requests, but not for inbound messages
 func (fwm *FEDWireMessage) validateSenderSupplied() error {
-	if fwm.SenderSupplied == nil {
+	if fwm.SenderSupplied == nil && fwm.MessageDisposition == nil {
 		return fieldError("SenderSupplied", ErrFieldRequired)
 	}
 	return nil

@@ -51,6 +51,8 @@ func (li *LocalInstrument) Parse(record string) error {
 	li.LocalInstrumentCode = li.parseStringField(record[6:10])
 	if delim := strings.IndexByte(record, '*'); delim > 0 {
 		li.ProprietaryCode = li.parseStringField(record[10:delim])
+	} else {
+		li.ProprietaryCode = li.parseStringField(record[10:])
 	}
 	return nil
 }

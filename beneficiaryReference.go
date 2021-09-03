@@ -46,8 +46,11 @@ func (br *BeneficiaryReference) Parse(record string) error {
 	}
 	br.tag = record[:6]
 
-	delim := strings.IndexByte(record, '*')
-	br.BeneficiaryReference = br.parseStringField(record[6:delim])
+	if delim := strings.IndexByte(record, '*'); delim > 0 {
+		br.BeneficiaryReference = br.parseStringField(record[6:delim])
+	} else {
+		br.BeneficiaryReference = br.parseStringField(record[6:])
+	}
 	return nil
 }
 

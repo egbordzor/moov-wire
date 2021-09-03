@@ -51,6 +51,8 @@ func (rdi *ReceiverDepositoryInstitution) Parse(record string) error {
 	rdi.ReceiverABANumber = rdi.parseStringField(record[6:15])
 	if delim := strings.IndexByte(record, '*'); delim > 0 {
 		rdi.ReceiverShortName = rdi.parseStringField(record[15:delim])
+	} else {
+		rdi.ReceiverShortName = rdi.parseStringField(record[15:])
 	}
 	return nil
 }

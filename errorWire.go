@@ -47,6 +47,8 @@ func (ew *ErrorWire) Parse(record string) {
 	// Fedwire Funds tags. For example: H024=INVLD CYCLE DT/MISSING/INVLD {1520}
 	if delim := strings.IndexByte(record, '*'); delim > 0 {
 		ew.ErrorDescription = ew.parseStringField(record[10:delim])
+	} else {
+		ew.ErrorDescription = ew.parseStringField(record[10:])
 	}
 }
 

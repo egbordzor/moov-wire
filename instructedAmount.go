@@ -49,9 +49,12 @@ func (ia *InstructedAmount) Parse(record string) error {
 	}
 	ia.tag = record[:6]
 	ia.CurrencyCode = ia.parseStringField(record[6:9])
+	if delim := strings.IndexByte(record, '*'); delim > 0 {
+		ia.Amount = ia.parseStringField(record[9:delim])
+	} else {
+		ia.Amount = ia.parseStringField(record[9:])
+	}
 
-	delim := strings.IndexByte(record, '*')
-	ia.Amount = ia.parseStringField(record[9:delim])
 	return nil
 }
 

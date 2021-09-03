@@ -52,6 +52,8 @@ func (sdi *SenderDepositoryInstitution) Parse(record string) error {
 	sdi.SenderABANumber = sdi.parseStringField(record[6:15])
 	if delim := strings.IndexByte(record, '*'); delim > 0 {
 		sdi.SenderShortName = sdi.parseStringField(record[15:delim])
+	} else {
+		sdi.SenderShortName = sdi.parseStringField(record[15:])
 	}
 	return nil
 }
