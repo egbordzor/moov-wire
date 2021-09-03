@@ -342,18 +342,18 @@ func TestRemittanceBeneficiaryDateBirthPlaceInvalid(t *testing.T) {
 
 // TestParseRemittanceBeneficiaryWrongLength parses a wrong RemittanceBeneficiary record length
 func TestParseRemittanceBeneficiaryWrongLength(t *testing.T) {
-	var line = "{8350}Name                                                                                                                                        OICUST111111                             Bank                                                                                                                 ADDRDepartment                                                            Sub-Department                                                        Street Name                                                           16              19405           AnyTown                            PA                                 UAAddress Line One                                                      Address Line Two                                                      Address Line Three                                                    Address Line Four                                                     Address Line Five                                                     Address Line Six                                                      Address Line Seven                                                  US"
+	var line = "{8350}*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseRemittanceBeneficiary()
 
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(1114, len(r.line))).Error())
+	require.EqualError(t, err, "line:0 record:RemittanceBeneficiary wire.TagWrongLengthErr must be [8, 1137] characters and found 7")
 }
 
 // TestParseRemittanceBeneficiaryReaderParseError parses a wrong RemittanceBeneficiary reader parse error
 func TestParseRemittanceBeneficiaryReaderParseError(t *testing.T) {
-	var line = "{8350}®ame                                                                                                                                        OICUST111111                             Bank                                                                                                                 ADDRDepartment                                                            Sub-Department                                                        Street Name                                                           16              19405           AnyTown                            PA                                 UAAddress Line One                                                      Address Line Two                                                      Address Line Three                                                    Address Line Four                                                     Address Line Five                                                     Address Line Six                                                      Address Line Seven                                                    US"
+	var line = "{8350}®ame*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 

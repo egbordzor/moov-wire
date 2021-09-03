@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,16 +37,34 @@ func NewBeneficiaryCustomer() *BeneficiaryCustomer {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (bc *BeneficiaryCustomer) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 186 {
-		return NewTagWrongLengthErr(186, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 8 || dataLen > 192 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [8, 192] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	bc.tag = record[:6]
-	bc.CoverPayment.SwiftFieldTag = bc.parseStringField(record[6:11])
-	bc.CoverPayment.SwiftLineOne = bc.parseStringField(record[11:46])
-	bc.CoverPayment.SwiftLineTwo = bc.parseStringField(record[46:81])
-	bc.CoverPayment.SwiftLineThree = bc.parseStringField(record[81:116])
-	bc.CoverPayment.SwiftLineFour = bc.parseStringField(record[116:151])
-	bc.CoverPayment.SwiftLineFive = bc.parseStringField(record[151:186])
+
+	optionalFields := strings.Split(record[6:], "*")
+	if len(optionalFields) >= 1 {
+		bc.CoverPayment.SwiftFieldTag = bc.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		bc.CoverPayment.SwiftLineOne = bc.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		bc.CoverPayment.SwiftLineTwo = bc.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		bc.CoverPayment.SwiftLineThree = bc.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		bc.CoverPayment.SwiftLineFour = bc.parseStringField(optionalFields[4])
+	}
+	if len(optionalFields) >= 6 {
+		bc.CoverPayment.SwiftLineFive = bc.parseStringField(optionalFields[5])
+	}
 	return nil
 }
 
@@ -68,12 +87,12 @@ func (bc *BeneficiaryCustomer) String() string {
 	var buf strings.Builder
 	buf.Grow(186)
 	buf.WriteString(bc.tag)
-	buf.WriteString(bc.SwiftFieldTagField())
-	buf.WriteString(bc.SwiftLineOneField())
-	buf.WriteString(bc.SwiftLineTwoField())
-	buf.WriteString(bc.SwiftLineThreeField())
-	buf.WriteString(bc.SwiftLineFourField())
-	buf.WriteString(bc.SwiftLineFiveField())
+	buf.WriteString(strings.TrimSpace(bc.SwiftFieldTagField()) + "*")
+	buf.WriteString(strings.TrimSpace(bc.SwiftLineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(bc.SwiftLineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(bc.SwiftLineThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(bc.SwiftLineFourField()) + "*")
+	buf.WriteString(strings.TrimSpace(bc.SwiftLineFiveField()) + "*")
 	return buf.String()
 }
 

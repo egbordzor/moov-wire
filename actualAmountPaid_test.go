@@ -64,18 +64,18 @@ func TestActualAmountPaidCurrencyCodeValid(t *testing.T) {
 
 // TestParseActualAmountPaidWrongLength parses a wrong ActualAmountPaid record length
 func TestParseActualAmountPaidWrongLength(t *testing.T) {
-	var line = "{8450}USD1234.56          "
+	var line = "{8450}USD12*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseActualAmountPaid()
 
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(28, len(r.line))).Error())
+	require.EqualError(t, err, "line:0 record:ActualAmountPaid wire.TagWrongLengthErr must be [13, 29] characters and found 12")
 }
 
 // TestParseActualAmountPaidReaderParseError parses a wrong ActualAmountPaid reader parse error
 func TestParseActualAmountPaidReaderParseError(t *testing.T) {
-	var line = "{8450}USD1234.56Z           "
+	var line = "{8450}USD1234.56Z*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 

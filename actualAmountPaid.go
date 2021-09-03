@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,12 +37,21 @@ func NewActualAmountPaid() *ActualAmountPaid {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (aap *ActualAmountPaid) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 28 {
-		return NewTagWrongLengthErr(28, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 13 || dataLen > 29 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [13, 29] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	aap.tag = record[:6]
 	aap.RemittanceAmount.CurrencyCode = aap.parseStringField(record[6:9])
-	aap.RemittanceAmount.Amount = aap.parseStringField(record[9:28])
+	if delim := strings.IndexByte(record, '*'); delim > 0 {
+		aap.RemittanceAmount.Amount = aap.parseStringField(record[9:delim])
+	} else {
+		aap.RemittanceAmount.Amount = aap.parseStringField(record[9:])
+	}
+
 	return nil
 }
 
@@ -65,7 +75,7 @@ func (aap *ActualAmountPaid) String() string {
 	buf.Grow(28)
 	buf.WriteString(aap.tag)
 	buf.WriteString(aap.CurrencyCodeField())
-	buf.WriteString(aap.AmountField())
+	buf.WriteString(strings.TrimSpace(aap.AmountField()) + "*")
 	return buf.String()
 }
 

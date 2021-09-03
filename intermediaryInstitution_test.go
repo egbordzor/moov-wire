@@ -98,18 +98,18 @@ func TestIntermediaryInstitutionSwiftLineSixAlphaNumeric(t *testing.T) {
 
 // TestParseIntermediaryInstitutionWrongLength parses a wrong IntermediaryInstitution record length
 func TestParseIntermediaryInstitutionWrongLength(t *testing.T) {
-	var line = "{7056}SwiftSwift Line One                     Swift Line Two                     Swift Line Three                   Swift Line Four                    Swift Line Five                  "
+	var line = "{7056}S"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseIntermediaryInstitution()
 
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(186, len(r.line))).Error())
+	require.EqualError(t, err, "line:0 record:IntermediaryInstitution wire.TagWrongLengthErr must be [8, 192] characters and found 7")
 }
 
 // TestParseIntermediaryInstitutionReaderParseError parses a wrong IntermediaryInstitution reader parse error
 func TestParseIntermediaryInstitutionReaderParseError(t *testing.T) {
-	var line = "{7056}SwiftSwift ®ine One                     Swift Line Two                     Swift Line Three                   Swift Line Four                    Swift Line Five                    "
+	var line = "{7056}Swift*Swift ®ine One*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 

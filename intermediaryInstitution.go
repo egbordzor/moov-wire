@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -36,16 +37,34 @@ func NewIntermediaryInstitution() *IntermediaryInstitution {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (ii *IntermediaryInstitution) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 186 {
-		return NewTagWrongLengthErr(186, len(record))
+	dataLen := utf8.RuneCountInString(record)
+	if dataLen < 8 || dataLen > 192 {
+		return TagWrongLengthErr{
+			Message: fmt.Sprintf("must be [8, 192] characters and found %d", dataLen),
+			Length:  dataLen,
+		}
 	}
 	ii.tag = record[:6]
-	ii.CoverPayment.SwiftFieldTag = ii.parseStringField(record[6:11])
-	ii.CoverPayment.SwiftLineOne = ii.parseStringField(record[11:46])
-	ii.CoverPayment.SwiftLineTwo = ii.parseStringField(record[46:81])
-	ii.CoverPayment.SwiftLineThree = ii.parseStringField(record[81:116])
-	ii.CoverPayment.SwiftLineFour = ii.parseStringField(record[116:151])
-	ii.CoverPayment.SwiftLineFive = ii.parseStringField(record[151:186])
+
+	optionalFields := strings.Split(record[6:], "*")
+	if len(optionalFields) >= 1 {
+		ii.CoverPayment.SwiftFieldTag = ii.parseStringField(optionalFields[0])
+	}
+	if len(optionalFields) >= 2 {
+		ii.CoverPayment.SwiftLineOne = ii.parseStringField(optionalFields[1])
+	}
+	if len(optionalFields) >= 3 {
+		ii.CoverPayment.SwiftLineTwo = ii.parseStringField(optionalFields[2])
+	}
+	if len(optionalFields) >= 4 {
+		ii.CoverPayment.SwiftLineThree = ii.parseStringField(optionalFields[3])
+	}
+	if len(optionalFields) >= 5 {
+		ii.CoverPayment.SwiftLineFour = ii.parseStringField(optionalFields[4])
+	}
+	if len(optionalFields) >= 6 {
+		ii.CoverPayment.SwiftLineFive = ii.parseStringField(optionalFields[5])
+	}
 	return nil
 }
 
@@ -68,12 +87,12 @@ func (ii *IntermediaryInstitution) String() string {
 	var buf strings.Builder
 	buf.Grow(186)
 	buf.WriteString(ii.tag)
-	buf.WriteString(ii.SwiftFieldTagField())
-	buf.WriteString(ii.SwiftLineOneField())
-	buf.WriteString(ii.SwiftLineTwoField())
-	buf.WriteString(ii.SwiftLineThreeField())
-	buf.WriteString(ii.SwiftLineFourField())
-	buf.WriteString(ii.SwiftLineFiveField())
+	buf.WriteString(strings.TrimSpace(ii.SwiftFieldTagField()) + "*")
+	buf.WriteString(strings.TrimSpace(ii.SwiftLineOneField()) + "*")
+	buf.WriteString(strings.TrimSpace(ii.SwiftLineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(ii.SwiftLineThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(ii.SwiftLineFourField()) + "*")
+	buf.WriteString(strings.TrimSpace(ii.SwiftLineFiveField()) + "*")
 	return buf.String()
 }
 
