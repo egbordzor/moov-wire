@@ -50,8 +50,12 @@ func (pm *FIPaymentMethodToBeneficiary) Parse(record string) error {
 	pm.tag = record[:6]
 	pm.PaymentMethod = pm.parseStringField(record[6:11])
 
-	delim := strings.IndexByte(record, '*')
-	pm.AdditionalInformation = pm.parseStringField(record[11:delim])
+	if delim := strings.IndexByte(record, '*'); delim > 0 {
+		pm.AdditionalInformation = pm.parseStringField(record[11:delim])
+	} else {
+		pm.AdditionalInformation = pm.parseStringField(record[11:])
+	}
+
 	return nil
 }
 

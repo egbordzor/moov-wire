@@ -47,8 +47,12 @@ func (eRate *ExchangeRate) Parse(record string) error {
 	}
 	eRate.tag = record[:6]
 
-	delim := strings.IndexByte(record, '*')
-	eRate.ExchangeRate = eRate.parseStringField(record[6:delim])
+	if delim := strings.IndexByte(record, '*'); delim > 0 {
+		eRate.ExchangeRate = eRate.parseStringField(record[6:delim])
+	} else {
+		eRate.ExchangeRate = eRate.parseStringField(record[6:])
+	}
+
 	return nil
 }
 
