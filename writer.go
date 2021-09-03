@@ -116,7 +116,7 @@ func (w *Writer) writeMandatory(fwm FEDWireMessage) error {
 		if _, err := w.w.WriteString(fwm.SenderSupplied.String()); err != nil {
 			return err
 		}
-	} else {
+	} else if fwm.MessageDisposition == nil {
 		return fieldError("SenderSupplied", ErrFieldRequired)
 	}
 
