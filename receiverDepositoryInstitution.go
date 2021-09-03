@@ -107,9 +107,6 @@ func (rdi *ReceiverDepositoryInstitution) fieldInclusion() error {
 	if rdi.ReceiverABANumber == "" {
 		return fieldError("ReceiverABANumber", ErrFieldRequired, rdi.ReceiverABANumber)
 	}
-	if rdi.ReceiverShortName == "" {
-		return fieldError("ReceiverShortName", ErrFieldRequired, rdi.ReceiverShortName)
-	}
 	return nil
 }
 

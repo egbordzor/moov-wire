@@ -108,9 +108,6 @@ func (sdi *SenderDepositoryInstitution) fieldInclusion() error {
 	if sdi.SenderABANumber == "" {
 		return fieldError("SenderABANumber", ErrFieldRequired, sdi.SenderABANumber)
 	}
-	if sdi.SenderShortName == "" {
-		return fieldError("SenderShortName", ErrFieldRequired, sdi.SenderShortName)
-	}
 	return nil
 }
 
