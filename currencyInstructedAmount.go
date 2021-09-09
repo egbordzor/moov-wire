@@ -17,6 +17,8 @@ type CurrencyInstructedAmount struct {
 	tag string
 	// SwiftFieldTag
 	SwiftFieldTag string `json:"swiftFieldTag"`
+	// CurrencyCode
+	CurrencyCode string `json:"currencyCode,omitempty"`
 	// Amount is the instructed amount
 	// Amount  Must begin with at least one numeric character (0-9) and contain only one decimal comma marker
 	// (e.g., $1,234.56 should be entered as 1234,56 and $0.99 should be entered as
@@ -54,7 +56,8 @@ func (cia *CurrencyInstructedAmount) Parse(record string) error {
 		cia.SwiftFieldTag = cia.parseStringField(optionalFields[0])
 	}
 	if len(optionalFields) >= 2 {
-		cia.Amount = cia.parseStringField(optionalFields[1])
+		cia.CurrencyCode = optionalFields[1][:3]
+		cia.Amount = cia.parseStringField(optionalFields[1][3:])
 	}
 	return nil
 }
@@ -79,7 +82,7 @@ func (cia *CurrencyInstructedAmount) String() string {
 	buf.Grow(29)
 	buf.WriteString(cia.tag)
 	buf.WriteString(strings.TrimSpace(cia.SwiftFieldTagField()) + "*")
-	buf.WriteString(strings.TrimSpace(cia.AmountField()) + "*")
+	buf.WriteString(strings.TrimSpace(cia.CurrencyCode+cia.AmountField()) + "*")
 	return buf.String()
 }
 
@@ -92,8 +95,13 @@ func (cia *CurrencyInstructedAmount) Validate() error {
 	if err := cia.isAlphanumeric(cia.SwiftFieldTag); err != nil {
 		return fieldError("SwiftFieldTag", err, cia.SwiftFieldTag)
 	}
-	if err := cia.isAmount(cia.Amount); err != nil {
-		return fieldError("Amount", err, cia.Amount)
+	if cia.CurrencyCode != "" {
+		if err := cia.isCurrencyCode(cia.CurrencyCode); err != nil {
+			return fieldError("CurrencyCode", err, cia.CurrencyCode)
+		}
+		if err := cia.isAmount(cia.Amount); err != nil {
+			return fieldError("Amount", err, cia.Amount)
+		}
 	}
 	return nil
 }
@@ -107,5 +115,5 @@ func (cia *CurrencyInstructedAmount) SwiftFieldTagField() string {
 
 // AmountField gets a string of the AmountTag field
 func (cia *CurrencyInstructedAmount) AmountField() string {
-	return cia.numericStringField(cia.Amount, 18)
+	return cia.numericStringField(cia.Amount, 15)
 }
