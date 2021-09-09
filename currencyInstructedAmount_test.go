@@ -11,6 +11,7 @@ import (
 func mockCurrencyInstructedAmount() *CurrencyInstructedAmount {
 	cia := NewCurrencyInstructedAmount()
 	cia.SwiftFieldTag = "Swift Field Tag"
+	cia.CurrencyCode = "USD"
 	cia.Amount = "1500,49"
 	return cia
 }
@@ -58,17 +59,17 @@ func TestParseCurrencyInstructedAmountWrongLength(t *testing.T) {
 
 // TestParseCurrencyInstructedAmountReaderParseError parses a wrong CurrencyInstructedAmount reader parse error
 func TestParseCurrencyInstructedAmountReaderParseError(t *testing.T) {
-	var line = "{7033}Swift*00000000Z001500,49*"
+	var line = "{7033}Swift*USD00000Z001500,49*"
 	r := NewReader(strings.NewReader(line))
 	r.line = line
 
 	err := r.parseCurrencyInstructedAmount()
 
-	require.EqualError(t, err, r.parseError(fieldError("Amount", ErrNonAmount, "00000000Z001500,49")).Error())
+	require.EqualError(t, err, r.parseError(fieldError("Amount", ErrNonAmount, "00000Z001500,49")).Error())
 
 	_, err = r.Read()
 
-	require.EqualError(t, err, r.parseError(fieldError("Amount", ErrNonAmount, "00000000Z001500,49")).Error())
+	require.EqualError(t, err, r.parseError(fieldError("Amount", ErrNonAmount, "00000Z001500,49")).Error())
 }
 
 // TestCurrencyInstructedAmountTagError validates a CurrencyInstructedAmount tag
