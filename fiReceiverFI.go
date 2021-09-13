@@ -93,7 +93,7 @@ func (firfi *FIReceiverFI) String() string {
 	buf.WriteString(strings.TrimSpace(firfi.LineFourField()) + "*")
 	buf.WriteString(strings.TrimSpace(firfi.LineFiveField()) + "*")
 	buf.WriteString(strings.TrimSpace(firfi.LineSixField()) + "*")
-	return buf.String()
+	return firfi.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on FIReceiverFI and returns an error if not Validated

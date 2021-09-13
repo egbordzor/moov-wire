@@ -74,7 +74,7 @@ func (br *BeneficiaryReference) String() string {
 	buf.Grow(22)
 	buf.WriteString(br.tag)
 	buf.WriteString(strings.TrimSpace(br.BeneficiaryReferenceField()) + "*")
-	return buf.String()
+	return br.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on BeneficiaryReference and returns an error if not Validated

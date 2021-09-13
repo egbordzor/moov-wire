@@ -80,7 +80,7 @@ func (rdi *ReceiverDepositoryInstitution) String() string {
 	if rdi.ReceiverShortName != "" {
 		buf.WriteString(strings.TrimSpace(rdi.ReceiverShortNameField()) + "*")
 	}
-	return buf.String()
+	return rdi.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on ReceiverDepositoryInstitution and returns an error if not Validated

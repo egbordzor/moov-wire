@@ -5,6 +5,7 @@
 package wire
 
 import (
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -40,4 +41,10 @@ func (c *converters) numericStringField(s string, max uint) string {
 	}
 	s = strings.Repeat("0", int(max-ln)) + s
 	return s
+}
+
+// cleanupDelimiters removes non-necessary extra "*" from the end of a string, and keeps only one
+func (c *converters) cleanupDelimiters(line string) string {
+	re := regexp.MustCompile(`\*{2,}$`)
+	return re.ReplaceAllString(line, "*")
 }

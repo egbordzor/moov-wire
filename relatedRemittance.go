@@ -155,7 +155,7 @@ func (rr *RelatedRemittance) String() string {
 	buf.WriteString(strings.TrimSpace(rr.AddressLineFiveField()) + "*")
 	buf.WriteString(strings.TrimSpace(rr.AddressLineSixField()) + "*")
 	buf.WriteString(strings.TrimSpace(rr.AddressLineSevenField()) + "*")
-	return buf.String()
+	return rr.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on RelatedRemittance and returns an error if not Validated

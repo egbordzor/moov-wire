@@ -81,7 +81,7 @@ func (sdi *SenderDepositoryInstitution) String() string {
 	if sdi.SenderShortName != "" {
 		buf.WriteString(strings.TrimSpace(sdi.SenderShortNameField()) + "*")
 	}
-	return buf.String()
+	return sdi.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on SenderDepositoryInstitution and returns an error if not Validated

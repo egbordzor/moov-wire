@@ -97,7 +97,7 @@ func (str *SenderToReceiver) String() string {
 	buf.WriteString(strings.TrimSpace(str.SwiftLineFourField()) + "*")
 	buf.WriteString(strings.TrimSpace(str.SwiftLineFiveField()) + "*")
 	buf.WriteString(strings.TrimSpace(str.SwiftLineSixField()) + "*")
-	return buf.String()
+	return str.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on SenderToReceiver and returns an error if not Validated

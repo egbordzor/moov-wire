@@ -91,7 +91,7 @@ func (bfi *BeneficiaryFI) String() string {
 	buf.WriteString(strings.TrimSpace(bfi.AddressLineOneField()) + "*")
 	buf.WriteString(strings.TrimSpace(bfi.AddressLineTwoField()) + "*")
 	buf.WriteString(strings.TrimSpace(bfi.AddressLineThreeField()) + "*")
-	return buf.String()
+	return bfi.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on BeneficiaryFI and returns an error if not Validated

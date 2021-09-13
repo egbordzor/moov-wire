@@ -93,7 +93,7 @@ func (iAccount *InstitutionAccount) String() string {
 	buf.WriteString(strings.TrimSpace(iAccount.SwiftLineThreeField()) + "*")
 	buf.WriteString(strings.TrimSpace(iAccount.SwiftLineFourField()) + "*")
 	buf.WriteString(strings.TrimSpace(iAccount.SwiftLineFiveField()) + "*")
-	return buf.String()
+	return iAccount.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on InstitutionAccount and returns an error if not Validated

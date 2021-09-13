@@ -153,7 +153,7 @@ func (oof *OriginatorOptionF) String() string {
 	buf.WriteString(strings.TrimSpace(oof.LineOneField()) + "*")
 	buf.WriteString(strings.TrimSpace(oof.LineTwoField()) + "*")
 	buf.WriteString(strings.TrimSpace(oof.LineThreeField()) + "*")
-	return buf.String()
+	return oof.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on OriginatorOptionF and returns an error if not Validated

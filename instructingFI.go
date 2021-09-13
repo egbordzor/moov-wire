@@ -91,7 +91,7 @@ func (ifi *InstructingFI) String() string {
 	buf.WriteString(strings.TrimSpace(ifi.AddressLineOneField()) + "*")
 	buf.WriteString(strings.TrimSpace(ifi.AddressLineTwoField()) + "*")
 	buf.WriteString(strings.TrimSpace(ifi.AddressLineThreeField()) + "*")
-	return buf.String()
+	return ifi.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on InstructingFI and returns an error if not Validated

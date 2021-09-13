@@ -95,7 +95,7 @@ func (fiba *FIBeneficiaryAdvice) String() string {
 	buf.WriteString(strings.TrimSpace(fiba.LineFourField()) + "*")
 	buf.WriteString(strings.TrimSpace(fiba.LineFiveField()) + "*")
 	buf.WriteString(strings.TrimSpace(fiba.LineSixField()) + "*")
-	return buf.String()
+	return fiba.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on FIBeneficiaryAdvice and returns an error if not Validated

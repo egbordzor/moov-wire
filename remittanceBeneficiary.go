@@ -171,7 +171,7 @@ func (rb *RemittanceBeneficiary) String() string {
 	if rb.RemittanceData.CountryOfResidence != "" {
 		buf.WriteString(strings.TrimSpace(rb.CountryOfResidenceField()) + "*")
 	}
-	return buf.String()
+	return rb.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on RemittanceBeneficiary and returns an error if not Validated

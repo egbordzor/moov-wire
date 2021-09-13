@@ -91,7 +91,7 @@ func (ob *OriginatorToBeneficiary) String() string {
 	buf.WriteString(strings.TrimSpace(ob.LineTwoField()) + "*")
 	buf.WriteString(strings.TrimSpace(ob.LineThreeField()) + "*")
 	buf.WriteString(strings.TrimSpace(ob.LineFourField()) + "*")
-	return buf.String()
+	return ob.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on OriginatorToBeneficiary and returns an error if not Validated

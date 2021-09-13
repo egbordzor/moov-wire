@@ -74,7 +74,7 @@ func (sr *SenderReference) String() string {
 	buf.Grow(22)
 	buf.WriteString(sr.tag)
 	buf.WriteString(strings.TrimSpace(sr.SenderReferenceField()) + "*")
-	return buf.String()
+	return sr.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on SenderReference and returns an error if not Validated

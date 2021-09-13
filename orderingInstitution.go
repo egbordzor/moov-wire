@@ -92,7 +92,7 @@ func (oi *OrderingInstitution) String() string {
 	buf.WriteString(strings.TrimSpace(oi.SwiftLineThreeField()) + "*")
 	buf.WriteString(strings.TrimSpace(oi.SwiftLineFourField()) + "*")
 	buf.WriteString(strings.TrimSpace(oi.SwiftLineFiveField()) + "*")
-	return buf.String()
+	return oi.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on OrderingInstitution and returns an error if not Validated

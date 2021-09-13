@@ -93,7 +93,7 @@ func (fiifia *FIIntermediaryFIAdvice) String() string {
 	buf.WriteString(strings.TrimSpace(fiifia.LineFourField()) + "*")
 	buf.WriteString(strings.TrimSpace(fiifia.LineFiveField()) + "*")
 	buf.WriteString(strings.TrimSpace(fiifia.LineSixField()) + "*")
-	return buf.String()
+	return fiifia.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on FIIntermediaryFIAdvice and returns an error if not Validated
