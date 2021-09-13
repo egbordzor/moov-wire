@@ -74,8 +74,8 @@ func (gard *GrossAmountRemittanceDocument) String() string {
 	buf.Grow(28)
 	buf.WriteString(gard.tag)
 	buf.WriteString(gard.CurrencyCodeField())
-	buf.WriteString(strings.TrimSpace(gard.AmountField()))
-	return buf.String()
+	buf.WriteString(strings.TrimSpace(gard.AmountField()) + "*")
+	return gard.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on GrossAmountRemittanceDocument and returns an error if not Validated

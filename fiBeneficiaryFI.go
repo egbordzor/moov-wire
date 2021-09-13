@@ -93,7 +93,7 @@ func (fibfi *FIBeneficiaryFI) String() string {
 	buf.WriteString(strings.TrimSpace(fibfi.LineFourField()) + "*")
 	buf.WriteString(strings.TrimSpace(fibfi.LineFiveField()) + "*")
 	buf.WriteString(strings.TrimSpace(fibfi.LineSixField()) + "*")
-	return buf.String()
+	return fibfi.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on FIBeneficiaryFI and returns an error if not Validated

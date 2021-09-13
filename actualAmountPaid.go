@@ -76,7 +76,7 @@ func (aap *ActualAmountPaid) String() string {
 	buf.WriteString(aap.tag)
 	buf.WriteString(aap.CurrencyCodeField())
 	buf.WriteString(strings.TrimSpace(aap.AmountField()) + "*")
-	return buf.String()
+	return aap.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on ActualAmountPaid and returns an error if not Validated

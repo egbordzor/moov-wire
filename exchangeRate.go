@@ -76,7 +76,7 @@ func (eRate *ExchangeRate) String() string {
 	buf.Grow(18)
 	buf.WriteString(eRate.tag)
 	buf.WriteString(strings.TrimSpace(eRate.ExchangeRateField()) + "*")
-	return buf.String()
+	return eRate.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on ExchangeRate and returns an error if not Validated

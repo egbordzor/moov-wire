@@ -79,7 +79,7 @@ func (ia *InstructedAmount) String() string {
 	buf.WriteString(ia.tag)
 	buf.WriteString(ia.CurrencyCodeField())
 	buf.WriteString(strings.TrimSpace(ia.AmountField()) + "*")
-	return buf.String()
+	return ia.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on InstructedAmount and returns an error if not Validated

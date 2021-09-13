@@ -91,7 +91,7 @@ func (ofi *OriginatorFI) String() string {
 	buf.WriteString(strings.TrimSpace(ofi.AddressLineOneField()) + "*")
 	buf.WriteString(strings.TrimSpace(ofi.AddressLineTwoField()) + "*")
 	buf.WriteString(strings.TrimSpace(ofi.AddressLineThreeField()) + "*")
-	return buf.String()
+	return ofi.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on OriginatorFI and returns an error if not Validated

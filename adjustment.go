@@ -89,7 +89,7 @@ func (adj *Adjustment) String() string {
 	buf.WriteString(adj.CurrencyCodeField())
 	buf.WriteString(strings.TrimSpace(adj.AmountField()) + "*")
 	buf.WriteString(strings.TrimSpace(adj.AdditionalInfoField()) + "*")
-	return buf.String()
+	return adj.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on Adjustment and returns an error if not Validated

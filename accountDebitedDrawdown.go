@@ -96,7 +96,7 @@ func (debitDD *AccountDebitedDrawdown) String() string {
 	buf.WriteString(strings.TrimSpace(debitDD.AddressLineOneField()) + "*")
 	buf.WriteString(strings.TrimSpace(debitDD.AddressLineTwoField()) + "*")
 	buf.WriteString(strings.TrimSpace(debitDD.AddressLineThreeField()) + "*")
-	return buf.String()
+	return debitDD.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on AccountDebitedDrawdown and returns an error if not Validated

@@ -109,7 +109,7 @@ func (pn *PaymentNotification) String() string {
 	buf.WriteString(strings.TrimSpace(pn.ContactMobileNumberField()) + "*")
 	buf.WriteString(strings.TrimSpace(pn.ContactFaxNumberField()) + "*")
 	buf.WriteString(strings.TrimSpace(pn.EndToEndIdentificationField()) + "*")
-	return buf.String()
+	return pn.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on PaymentNotification and returns an error if not Validated

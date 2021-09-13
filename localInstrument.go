@@ -80,7 +80,7 @@ func (li *LocalInstrument) String() string {
 	if li.ProprietaryCode != "" {
 		buf.WriteString(strings.TrimSpace(li.ProprietaryCodeField()) + "*")
 	}
-	return buf.String()
+	return li.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on LocalInstrument and returns an error if not Validated

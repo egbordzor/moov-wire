@@ -80,7 +80,7 @@ func (pm *FIPaymentMethodToBeneficiary) String() string {
 	buf.WriteString(pm.tag)
 	buf.WriteString(pm.PaymentMethodField())
 	buf.WriteString(strings.TrimSpace(pm.AdditionalInformationField()) + "*")
-	return buf.String()
+	return pm.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on FIPaymentMethodToBeneficiary and returns an error if not Validated

@@ -95,7 +95,7 @@ func (debitDDAdvice *FIDrawdownDebitAccountAdvice) String() string {
 	buf.WriteString(strings.TrimSpace(debitDDAdvice.LineFourField()) + "*")
 	buf.WriteString(strings.TrimSpace(debitDDAdvice.LineFiveField()) + "*")
 	buf.WriteString(strings.TrimSpace(debitDDAdvice.LineSixField()) + "*")
-	return buf.String()
+	return debitDDAdvice.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on FIDrawdownDebitAccountAdvice and returns an error if not Validated

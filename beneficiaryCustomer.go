@@ -93,7 +93,7 @@ func (bc *BeneficiaryCustomer) String() string {
 	buf.WriteString(strings.TrimSpace(bc.SwiftLineThreeField()) + "*")
 	buf.WriteString(strings.TrimSpace(bc.SwiftLineFourField()) + "*")
 	buf.WriteString(strings.TrimSpace(bc.SwiftLineFiveField()) + "*")
-	return buf.String()
+	return bc.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on BeneficiaryCustomer and returns an error if not Validated

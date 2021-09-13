@@ -89,7 +89,7 @@ func (prd *PrimaryRemittanceDocument) String() string {
 	buf.WriteString(strings.TrimSpace(prd.ProprietaryDocumentTypeCodeField()) + "*")
 	buf.WriteString(strings.TrimSpace(prd.DocumentIdentificationNumberField()) + "*")
 	buf.WriteString(strings.TrimSpace(prd.IssuerField()) + "*")
-	return buf.String()
+	return prd.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on PrimaryRemittanceDocument and returns an error if not Validated

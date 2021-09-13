@@ -202,7 +202,7 @@ func (ro *RemittanceOriginator) String() string {
 	buf.WriteString(strings.TrimSpace(ro.ContactFaxNumberField()) + "*")
 	buf.WriteString(strings.TrimSpace(ro.ContactElectronicAddressField()) + "*")
 	buf.WriteString(strings.TrimSpace(ro.ContactOtherField()) + "*")
-	return buf.String()
+	return ro.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on RemittanceOriginator and returns an error if not Validated

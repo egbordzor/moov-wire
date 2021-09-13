@@ -74,7 +74,7 @@ func (ew *ErrorWire) String() string {
 	buf.WriteString(ew.ErrorCategoryField())
 	buf.WriteString(ew.ErrorCodeField())
 	buf.WriteString(strings.TrimSpace(ew.ErrorDescriptionField()) + "*")
-	return buf.String()
+	return ew.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on ErrorWire and returns an error if not Validated

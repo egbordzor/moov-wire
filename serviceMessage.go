@@ -139,7 +139,7 @@ func (sm *ServiceMessage) String() string {
 	buf.WriteString(strings.TrimSpace(sm.LineTenField()) + "*")
 	buf.WriteString(strings.TrimSpace(sm.LineElevenField()) + "*")
 	buf.WriteString(strings.TrimSpace(sm.LineTwelveField()) + "*")
-	return buf.String()
+	return sm.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on ServiceMessage and returns an error if not Validated

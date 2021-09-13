@@ -91,7 +91,7 @@ func (o *Originator) String() string {
 	buf.WriteString(strings.TrimSpace(o.AddressLineOneField()) + "*")
 	buf.WriteString(strings.TrimSpace(o.AddressLineTwoField()) + "*")
 	buf.WriteString(strings.TrimSpace(o.AddressLineThreeField()) + "*")
-	return buf.String()
+	return o.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on Originator and returns an error if not Validated

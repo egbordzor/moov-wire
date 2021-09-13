@@ -91,7 +91,7 @@ func (ben *Beneficiary) String() string {
 	buf.WriteString(strings.TrimSpace(ben.AddressLineOneField()) + "*")
 	buf.WriteString(strings.TrimSpace(ben.AddressLineTwoField()) + "*")
 	buf.WriteString(strings.TrimSpace(ben.AddressLineThreeField()) + "*")
-	return buf.String()
+	return ben.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on Beneficiary and returns an error if not Validated

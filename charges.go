@@ -93,7 +93,7 @@ func (c *Charges) String() string {
 	buf.WriteString(strings.TrimSpace(c.SendersChargesTwoField()) + "*")
 	buf.WriteString(strings.TrimSpace(c.SendersChargesThreeField()) + "*")
 	buf.WriteString(strings.TrimSpace(c.SendersChargesFourField()) + "*")
-	return buf.String()
+	return c.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on Charges and returns an error if not Validated

@@ -93,7 +93,7 @@ func (ii *IntermediaryInstitution) String() string {
 	buf.WriteString(strings.TrimSpace(ii.SwiftLineThreeField()) + "*")
 	buf.WriteString(strings.TrimSpace(ii.SwiftLineFourField()) + "*")
 	buf.WriteString(strings.TrimSpace(ii.SwiftLineFiveField()) + "*")
-	return buf.String()
+	return ii.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on IntermediaryInstitution and returns an error if not Validated

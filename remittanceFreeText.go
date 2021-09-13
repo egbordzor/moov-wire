@@ -85,7 +85,7 @@ func (rft *RemittanceFreeText) String() string {
 	buf.WriteString(strings.TrimSpace(rft.LineOneField()) + "*")
 	buf.WriteString(strings.TrimSpace(rft.LineTwoField()) + "*")
 	buf.WriteString(strings.TrimSpace(rft.LineThreeField()) + "*")
-	return buf.String()
+	return rft.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on RemittanceFreeText and returns an error if not Validated

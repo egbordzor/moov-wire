@@ -89,7 +89,7 @@ func (ri *Remittance) String() string {
 	buf.WriteString(strings.TrimSpace(ri.SwiftLineTwoField()) + "*")
 	buf.WriteString(strings.TrimSpace(ri.SwiftLineThreeField()) + "*")
 	buf.WriteString(strings.TrimSpace(ri.SwiftLineFourField()) + "*")
-	return buf.String()
+	return ri.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on Remittance and returns an error if not Validated

@@ -93,7 +93,7 @@ func (oc *OrderingCustomer) String() string {
 	buf.WriteString(strings.TrimSpace(oc.SwiftLineThreeField()) + "*")
 	buf.WriteString(strings.TrimSpace(oc.SwiftLineFourField()) + "*")
 	buf.WriteString(strings.TrimSpace(oc.SwiftLineFiveField()) + "*")
-	return buf.String()
+	return oc.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on OrderingCustomer and returns an error if not Validated

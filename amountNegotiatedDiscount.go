@@ -75,7 +75,7 @@ func (nd *AmountNegotiatedDiscount) String() string {
 	buf.WriteString(nd.tag)
 	buf.WriteString(nd.CurrencyCodeField())
 	buf.WriteString(strings.TrimSpace(nd.AmountField()) + "*")
-	return buf.String()
+	return nd.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on AmountNegotiatedDiscount and returns an error if not Validated

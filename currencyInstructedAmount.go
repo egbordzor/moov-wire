@@ -83,7 +83,7 @@ func (cia *CurrencyInstructedAmount) String() string {
 	buf.WriteString(cia.tag)
 	buf.WriteString(strings.TrimSpace(cia.SwiftFieldTagField()) + "*")
 	buf.WriteString(strings.TrimSpace(cia.CurrencyCode+cia.AmountField()) + "*")
-	return buf.String()
+	return cia.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on CurrencyInstructedAmount and returns an error if not Validated

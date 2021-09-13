@@ -78,7 +78,7 @@ func (bfc *BusinessFunctionCode) String() string {
 	if bfc.TransactionTypeCode != "" {
 		buf.WriteString(strings.TrimSpace(bfc.TransactionTypeCodeField()) + "*")
 	}
-	return buf.String()
+	return bfc.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on BusinessFunctionCode and returns an error if not Validated
