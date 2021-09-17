@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // LocalInstrument is the LocalInstrument of the wire
@@ -39,14 +37,6 @@ func NewLocalInstrument() *LocalInstrument {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (li *LocalInstrument) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 10 || dataLen > 46 {
-		return TagWrongLengthErr{
-			Message:   fmt.Sprintf("must be [10, 46] characters and found %d", dataLen),
-			TagLength: 46,
-			Length:    dataLen,
-		}
-	}
 	li.tag = record[:6]
 	li.LocalInstrumentCode = li.parseStringField(record[6:10])
 	if delim := strings.IndexByte(record, '*'); delim > 0 {

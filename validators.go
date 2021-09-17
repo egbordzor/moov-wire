@@ -420,7 +420,7 @@ func (v *validator) isDay(m string, d string) error {
 // date format. (C=Century, Y=Year, M=Month, D=Day)
 func (v *validator) validateDate(s string) error {
 	if length := utf8.RuneCountInString(s); length != 8 {
-		return NewTagWrongLengthErr(8, len(s))
+		return ErrValidDate
 	}
 	cc, yy, mm, dd := s[:2], s[2:4], s[4:6], s[6:8]
 

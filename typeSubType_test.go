@@ -62,17 +62,6 @@ func TestSubTypeCodeRequired(t *testing.T) {
 	require.EqualError(t, err, fieldError("SubTypeCode", ErrFieldRequired).Error())
 }
 
-// TestParseTypeSubTypeWrongLength parses a wrong TypeSubType record length
-func TestParseTypeSubTypeWrongLength(t *testing.T) {
-	var line = "{1510}1"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseTypeSubType()
-
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(10, len(r.line))).Error())
-}
-
 // TestParseTypeSubTypeReaderParseError parses a wrong TypeSubType reader parse error
 func TestParseTypeSubTypeReaderParseError(t *testing.T) {
 	var line = "{1510}100Z"

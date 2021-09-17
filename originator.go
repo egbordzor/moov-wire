@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // Originator is the originator of the wire
@@ -37,13 +35,6 @@ func NewOriginator() *Originator {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (o *Originator) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 7 || dataLen > 186 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [7, 186] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	o.tag = record[:6]
 	o.Personal.IdentificationCode = o.parseStringField(record[6:7])
 

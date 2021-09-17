@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // OriginatorOptionF is originator option F information
@@ -101,13 +99,6 @@ func NewOriginatorOptionF() *OriginatorOptionF {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (oof *OriginatorOptionF) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 13 || dataLen > 186 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [13, 186] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	oof.tag = oof.parseStringField(record[:6])
 
 	optionalFields := strings.Split(record[6:], "*")

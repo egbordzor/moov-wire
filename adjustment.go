@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // Adjustment is adjustment
@@ -43,13 +41,6 @@ func NewAdjustment() *Adjustment {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (adj *Adjustment) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 18 || dataLen > 176 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [18, 176] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	adj.tag = record[:6]
 	adj.AdjustmentReasonCode = adj.parseStringField(record[6:8])
 	adj.CreditDebitIndicator = adj.parseStringField(record[8:12])

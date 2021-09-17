@@ -79,17 +79,6 @@ func TestSenderSuppliedUserRequestCorrelationRequired(t *testing.T) {
 	require.EqualError(t, err, fieldError("UserRequestCorrelation", ErrFieldRequired, ss.UserRequestCorrelation).Error())
 }
 
-// TestParseSenderSuppliedWrongLength parses a wrong SenderSupplied record length
-func TestParseSenderSuppliedWrongLength(t *testing.T) {
-	var line = "{1500}30P"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseSenderSupplied()
-
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(18, len(r.line))).Error())
-}
-
 // TestParseSenderSuppliedReaderParseError parses a wrong SenderSupplied reader parse error
 func TestParseSenderSuppliedReaderParseError(t *testing.T) {
 	var line = "{1500}25User ReqP "

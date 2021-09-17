@@ -97,17 +97,6 @@ func TestContactEndToEndIdentificationNumeric(t *testing.T) {
 	require.EqualError(t, err, fieldError("EndToEndIdentification", ErrNonAlphanumeric, pn.EndToEndIdentification).Error())
 }
 
-// TestParsePaymentNotificationWrongLength parses a wrong PaymentNotification record length
-func TestParsePaymentNotificationWrongLength(t *testing.T) {
-	var line = "{3620}1***"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parsePaymentNotification()
-
-	require.EqualError(t, err, "line:0 record:PaymentNotification wire.TagWrongLengthErr must be [13, 2341] characters and found 10")
-}
-
 // TestParsePaymentNotificationReaderParseError parses a wrong PaymentNotification reader parse error
 func TestParsePaymentNotificationReaderParseError(t *testing.T) {
 	var line = "{3620}Zhttp://moov.io*Contact Name*5555551212*5551231212*5554561212*End To End Identification*"

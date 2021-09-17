@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // PaymentNotification is the PaymentNotification of the wire
@@ -51,13 +49,6 @@ func NewPaymentNotification() *PaymentNotification {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (pn *PaymentNotification) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 13 || dataLen > 2341 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [13, 2341] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	pn.tag = record[:6]
 	pn.PaymentNotificationIndicator = pn.parseStringField(record[6:7])
 

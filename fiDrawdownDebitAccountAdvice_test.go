@@ -97,17 +97,6 @@ func TestFIDrawdownDebitAccountAdviceLineSixAlphaNumeric(t *testing.T) {
 	require.EqualError(t, err, fieldError("LineSix", ErrNonAlphanumeric, debitDDAdvice.Advice.LineSix).Error())
 }
 
-// TestParseFIDrawdownDebitAccountAdviceWrongLength parses a wrong FIDrawdownDebitAccountAdvice record length
-func TestParseFIDrawdownDebitAccountAdviceWrongLength(t *testing.T) {
-	var line = "{6110}LT"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseFIDrawdownDebitAccountAdvice()
-
-	require.EqualError(t, err, "line:0 record:FIDrawdownDebitAccountAdvice wire.TagWrongLengthErr must be [9, 206] characters and found 8")
-}
-
 // TestParseFIDrawdownDebitAccountAdviceReaderParseError parses a wrong FIDrawdownDebitAccountAdvice reader parse error
 func TestParseFIDrawdownDebitAccountAdviceReaderParseError(t *testing.T) {
 	var line = "{6110}LTR®ine One                  *Line Two                         *Line Three                       *Line Four                        *Line Five                        *Line Six                         *"

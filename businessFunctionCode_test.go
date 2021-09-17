@@ -41,17 +41,6 @@ func TestBusinessFunctionCodeRequired(t *testing.T) {
 	require.EqualError(t, err, fieldError("BusinessFunctionCode", ErrFieldRequired, bfc.BusinessFunctionCode).Error())
 }
 
-// TestParseBusinessFunctionCodeWrongLength parses a wrong BusinessFunctionCode record length
-func TestParseBusinessFunctionCodeWrongLength(t *testing.T) {
-	var line = "{3600}CT"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseBusinessFunctionCode()
-
-	require.EqualError(t, err, "line:0 record:BusinessFunctionCode wire.TagWrongLengthErr must be [9, 13] characters and found 8")
-}
-
 // TestParseBusinessFunctionCodeReaderParseError parses a wrong BusinessFunctionCode reader parse error
 func TestParseBusinessFunctionCodeReaderParseError(t *testing.T) {
 	var line = "{3600}CTAXXY*"

@@ -96,17 +96,6 @@ func TestBeneficiaryCustomerSwiftLineSixAlphaNumeric(t *testing.T) {
 	require.EqualError(t, err, fieldError("SwiftLineSix", ErrInvalidProperty, sr.CoverPayment.SwiftLineSix).Error())
 }
 
-// TestParseBeneficiaryCustomerWrongLength parses a wrong BeneficiaryCustomer record length
-func TestParseBeneficiaryCustomerWrongLength(t *testing.T) {
-	var line = "{7059}S"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseBeneficiaryCustomer()
-
-	require.EqualError(t, err, "line:0 record:BeneficiaryCustomer wire.TagWrongLengthErr must be [8, 192] characters and found 7")
-}
-
 // TestParseBeneficiaryCustomerReaderParseError parses a wrong BeneficiaryCustomer reader parse error
 func TestParseBeneficiaryCustomerReaderParseError(t *testing.T) {
 	var line = "{7059}Swift*Swift ®ine One"

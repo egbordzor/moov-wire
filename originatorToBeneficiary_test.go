@@ -64,17 +64,6 @@ func TestOriginatorToBeneficiaryLineFourAlphaNumeric(t *testing.T) {
 	require.EqualError(t, err, fieldError("LineFour", ErrNonAlphanumeric, ob.LineFour).Error())
 }
 
-// TestParseOriginatorToBeneficiaryWrongLength parses a wrong OriginatorToBeneficiary record length
-func TestParseOriginatorToBeneficiaryWrongLength(t *testing.T) {
-	var line = "{6000}*"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseOriginatorToBeneficiary()
-
-	require.EqualError(t, err, "line:0 record:OriginatorToBeneficiary wire.TagWrongLengthErr must be [11, 150] characters and found 7")
-}
-
 // TestParseOriginatorToBeneficiaryReaderParseError parses a wrong OriginatorToBeneficiary reader parse error
 func TestParseOriginatorToBeneficiaryReaderParseError(t *testing.T) {
 	var line = "{6000}LineOne                            *®ineTwo                            *LineThree                          *LineFour                           *"

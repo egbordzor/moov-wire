@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // InstructedAmount is the InstructedAmount of the wire
@@ -40,13 +38,6 @@ func NewInstructedAmount() *InstructedAmount {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (ia *InstructedAmount) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 12 || dataLen > 25 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [12, 25] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	ia.tag = record[:6]
 	ia.CurrencyCode = ia.parseStringField(record[6:9])
 	if delim := strings.IndexByte(record, '*'); delim > 0 {

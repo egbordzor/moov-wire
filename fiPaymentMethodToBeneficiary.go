@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // FIPaymentMethodToBeneficiary is the financial institution payment method to beneficiary
@@ -40,13 +38,6 @@ func NewFIPaymentMethodToBeneficiary() *FIPaymentMethodToBeneficiary {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (pm *FIPaymentMethodToBeneficiary) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 12 || dataLen > 42 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [12, 42] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	pm.tag = record[:6]
 	pm.PaymentMethod = pm.parseStringField(record[6:11])
 

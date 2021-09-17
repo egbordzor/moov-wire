@@ -126,17 +126,6 @@ func TestIdentificationCodeBogus(t *testing.T) {
 	require.EqualError(t, err, fieldError("IdentificationCode", ErrIdentificationCode, debitDD.IdentificationCode).Error())
 }
 
-// TestParseAccountDebitedDrawdownWrongLength parses a wrong AccountDebitedDrawdown record length
-func TestParseAccountDebitedDrawdownWrongLength(t *testing.T) {
-	var line = "{4400}D"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseAccountDebitedDrawdown()
-
-	require.EqualError(t, err, "line:0 record:AccountDebitedDrawdown wire.TagWrongLengthErr must be [14, 186] characters and found 7")
-}
-
 // TestParseAccountDebitedDrawdownReaderParseError parses a wrong AccountDebitedDrawdown reader parse error
 func TestParseAccountDebitedDrawdownReaderParseError(t *testing.T) {
 	var line = "{4400}D123456789                         *debitDD ®ame                       *Address One                        *Address Two                        *Address Three                      *"

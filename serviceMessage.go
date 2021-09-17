@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // ServiceMessage is the ServiceMessage of the wire
@@ -59,13 +57,6 @@ func NewServiceMessage() *ServiceMessage {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (sm *ServiceMessage) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 8 || dataLen > 438 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [8, 438] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	sm.tag = record[:6]
 
 	optionalFields := strings.Split(record[6:], "*")

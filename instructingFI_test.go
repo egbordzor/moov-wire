@@ -116,17 +116,6 @@ func TestInstructingFIIdentifierRequired(t *testing.T) {
 	require.EqualError(t, err, fieldError("Identifier", ErrFieldRequired).Error())
 }
 
-// TestParseInstructingFIWrongLength parses a wrong InstructingFI record length
-func TestParseInstructingFIWrongLength(t *testing.T) {
-	var line = "{5200}D"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseInstructingFI()
-
-	require.EqualError(t, err, "line:0 record:InstructingFI wire.TagWrongLengthErr must be [12, 186] characters and found 7")
-}
-
 // TestParseInstructingFIReaderParseError parses a wrong InstructingFI reader parse error
 func TestParseInstructingFIReaderParseError(t *testing.T) {
 	var line = "{5200}D123456789                         *®I Name                            *Address One                        *Address Two                        *Address Three                      *"

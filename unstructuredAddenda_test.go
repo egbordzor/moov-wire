@@ -52,17 +52,6 @@ func TestAddendaLengthRequired(t *testing.T) {
 	require.EqualError(t, err, fieldError("AddendaLength", ErrFieldRequired).Error())
 }
 
-// TestParseUnstructuredAddendaWrongLength parses a wrong Addenda record length
-func TestParseAddendaWrongLength(t *testing.T) {
-	var line = "{8200}0020Unstructured Addenda  "
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseUnstructuredAddenda()
-
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(30, len(r.line))).Error())
-}
-
 // TestParseUnstructuredAddendaReaderParseError parses a wrong Addenda reader parse error
 func TestParseUnstructuredAddendaReaderParseError(t *testing.T) {
 	var line = "{8200}0020®nstructured Addenda"

@@ -31,19 +31,6 @@ func TestExchangeRateNumeric(t *testing.T) {
 	require.EqualError(t, err, fieldError("ExchangeRate", ErrNonAmount, eRate.ExchangeRate).Error())
 }
 
-// TestParseExchangeRateWrongLength parses a wrong ExchangeRate record length
-func TestParseExchangeRateWrongLength(t *testing.T) {
-	var line = "{3720}*"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseExchangeRate()
-	require.EqualError(t, err, "line:0 record:ExchangeRate wire.TagWrongLengthErr must be [9, 19] characters and found 7")
-
-	_, err = r.Read()
-	require.EqualError(t, err, "line:1 record:ExchangeRate wire.TagWrongLengthErr must be [9, 19] characters and found 7")
-}
-
 // TestParseExchangeRateReaderParseError parses a wrong ExchangeRate reader parse error
 func TestParseExchangeRateReaderParseError(t *testing.T) {
 	var line = "{3720}1,2345Z     *"

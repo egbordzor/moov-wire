@@ -54,17 +54,6 @@ func TestGrossAmountRemittanceCurrencyCodeValid(t *testing.T) {
 	require.EqualError(t, gard.Validate(), fieldError("CurrencyCode", ErrNonCurrencyCode, gard.RemittanceAmount.CurrencyCode).Error())
 }
 
-// TestParseGrossAmountRemittanceWrongLength parses a wrong GrossAmountRemittance record length
-func TestParseGrossAmountRemittanceWrongLength(t *testing.T) {
-	var line = "{8500}USD12*"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseGrossAmountRemittanceDocument()
-
-	require.EqualError(t, err, "line:0 record:GrossAmountRemittanceDocument wire.TagWrongLengthErr must be [13, 29] characters and found 12")
-}
-
 // TestParseGrossAmountRemittanceReaderParseError parses a wrong GrossAmountRemittance reader parse error
 func TestParseGrossAmountRemittanceReaderParseError(t *testing.T) {
 	var line = "{8500}USD1234.56Z*"

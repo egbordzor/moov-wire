@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // RemittanceBeneficiary is remittance beneficiary
@@ -45,13 +43,6 @@ func NewRemittanceBeneficiary() *RemittanceBeneficiary {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (rb *RemittanceBeneficiary) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 8 || dataLen > 1137 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [8, 1137] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	rb.tag = record[:6]
 
 	optionalFields := strings.Split(record[6:], "*")

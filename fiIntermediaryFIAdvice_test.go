@@ -97,16 +97,6 @@ func TestFIIntermediaryFIAdviceLineSixAlphaNumeric(t *testing.T) {
 	require.EqualError(t, err, fieldError("LineSix", ErrNonAlphanumeric, fiifia.Advice.LineSix).Error())
 }
 
-// TestParseFIIntermediaryFIAdviceWrongLength parses a wrong FIIntermediaryFIAdvice record length
-func TestParseFIIntermediaryFIAdviceWrongLength(t *testing.T) {
-	var line = "{6210}LTR"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseFIIntermediaryFIAdvice()
-	require.EqualError(t, err, "line:0 record:FIIntermediaryFIAdvice wire.TagWrongLengthErr must be [10, 206] characters and found 9")
-}
-
 // TestParseFIIntermediaryFIAdviceReaderParseError parses a wrong FIIntermediaryFIAdvice reader parse error
 func TestParseFIIntermediaryFIAdviceReaderParseError(t *testing.T) {
 	var line = "{6210}LTRLine ®ne*"

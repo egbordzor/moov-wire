@@ -67,17 +67,6 @@ func TestInputMessageAccountabilityDataInputSequenceNumberRequired(t *testing.T)
 	require.EqualError(t, imad.Validate(), fieldError("InputSequenceNumber", ErrFieldRequired, imad.InputSequenceNumber).Error())
 }
 
-// TestParseInputMessageAccountabilityDataWrongLength parses a wrong InputMessageAccountabilityData record length
-func TestParseInputMessageAccountabilityDataWrongLength(t *testing.T) {
-	var line = "{1510}1"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseInputMessageAccountabilityData()
-
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(28, len(r.line))).Error())
-}
-
 // TestParseInputMessageAccountabilityDataReaderParseError parses a wrong InputMessageAccountabilityData reader parse error
 func TestParseInputMessageAccountabilityDataReaderParseError(t *testing.T) {
 	var line = "{1520}20190507Source0800000Z"

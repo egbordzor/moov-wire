@@ -7,7 +7,6 @@ package wire
 import (
 	"encoding/json"
 	"strings"
-	"unicode/utf8"
 )
 
 // ReceiptTimeStamp is the receipt time stamp of the wire
@@ -40,10 +39,6 @@ func NewReceiptTimeStamp() *ReceiptTimeStamp {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (rts *ReceiptTimeStamp) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 18 {
-		return NewTagWrongLengthErr(18, utf8.RuneCountInString(record))
-	}
-
 	rts.tag = record[:6]
 	rts.ReceiptDate = rts.parseStringField(record[6:10])
 	rts.ReceiptTime = rts.parseStringField(record[10:14])

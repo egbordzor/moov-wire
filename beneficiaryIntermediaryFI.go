@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // BeneficiaryIntermediaryFI {4000}
@@ -37,13 +35,6 @@ func NewBeneficiaryIntermediaryFI() *BeneficiaryIntermediaryFI {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (bifi *BeneficiaryIntermediaryFI) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 12 || dataLen > 186 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [12, 186] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	bifi.tag = record[:6]
 	bifi.FinancialInstitution.IdentificationCode = bifi.parseStringField(record[6:7])
 
