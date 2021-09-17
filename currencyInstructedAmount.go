@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // CurrencyInstructedAmount is the currency instructed amount
@@ -42,13 +40,6 @@ func NewCurrencyInstructedAmount() *CurrencyInstructedAmount {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (cia *CurrencyInstructedAmount) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 8 || dataLen > 31 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [8, 31] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	cia.tag = record[:6]
 
 	optionalFields := strings.Split(record[6:], "*")

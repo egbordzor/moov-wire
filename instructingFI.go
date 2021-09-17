@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // InstructingFI is the instructing financial institution
@@ -37,13 +35,6 @@ func NewInstructingFI() *InstructingFI {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (ifi *InstructingFI) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 12 || dataLen > 186 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [12, 186] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	ifi.tag = record[:6]
 	ifi.FinancialInstitution.IdentificationCode = ifi.parseStringField(record[6:7])
 

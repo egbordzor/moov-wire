@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // SenderReference is the SenderReference of the wire
@@ -37,14 +35,6 @@ func NewSenderReference() *SenderReference {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (sr *SenderReference) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 8 || dataLen > 23 {
-		return TagWrongLengthErr{
-			Message:   fmt.Sprintf("must be [8, 23] characters and found %d", dataLen),
-			TagLength: 23,
-			Length:    dataLen,
-		}
-	}
 	sr.tag = record[:6]
 	if delim := strings.IndexByte(record, '*'); delim > 0 {
 		sr.SenderReference = sr.parseStringField(record[6:delim])

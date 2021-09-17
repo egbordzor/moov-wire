@@ -340,17 +340,6 @@ func TestRemittanceBeneficiaryDateBirthPlaceInvalid(t *testing.T) {
 	require.EqualError(t, err, fieldError("DateBirthPlace", ErrInvalidProperty, rb.RemittanceData.DateBirthPlace).Error())
 }
 
-// TestParseRemittanceBeneficiaryWrongLength parses a wrong RemittanceBeneficiary record length
-func TestParseRemittanceBeneficiaryWrongLength(t *testing.T) {
-	var line = "{8350}*"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseRemittanceBeneficiary()
-
-	require.EqualError(t, err, "line:0 record:RemittanceBeneficiary wire.TagWrongLengthErr must be [8, 1137] characters and found 7")
-}
-
 // TestParseRemittanceBeneficiaryReaderParseError parses a wrong RemittanceBeneficiary reader parse error
 func TestParseRemittanceBeneficiaryReaderParseError(t *testing.T) {
 	var line = "{8350}®ame*"

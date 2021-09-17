@@ -62,17 +62,6 @@ func TestAmountNegotiatedDiscountCurrencyCodeRequired(t *testing.T) {
 	require.EqualError(t, err, fieldError("CurrencyCode", ErrFieldRequired).Error())
 }
 
-// TestParseAmountNegotiatedDiscountWrongLength parses a wrong AmountNegotiatedDiscount record length
-func TestParseAmountNegotiatedDiscountWrongLength(t *testing.T) {
-	var line = "{8550}USD12*"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseAmountNegotiatedDiscount()
-
-	require.EqualError(t, err, "line:0 record:AmountNegotiatedDiscount wire.TagWrongLengthErr must be [13, 29] characters and found 12")
-}
-
 // TestParseAmountNegotiatedDiscountReaderParseError parses a wrong AmountNegotiatedDiscount reader parse error
 func TestParseAmountNegotiatedDiscountReaderParseError(t *testing.T) {
 	var line = "{8550}USD1234.56Z*"

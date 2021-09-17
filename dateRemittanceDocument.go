@@ -7,7 +7,6 @@ package wire
 import (
 	"encoding/json"
 	"strings"
-	"unicode/utf8"
 )
 
 // DateRemittanceDocument is the date of remittance document
@@ -36,9 +35,6 @@ func NewDateRemittanceDocument() *DateRemittanceDocument {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (drd *DateRemittanceDocument) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 14 {
-		return NewTagWrongLengthErr(14, len(record))
-	}
 	drd.tag = record[:6]
 	drd.DateRemittanceDocument = drd.parseStringField(record[6:14])
 	return nil

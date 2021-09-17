@@ -53,17 +53,6 @@ func TestRemittanceFreeTextLineThreeAlphaNumeric(t *testing.T) {
 	require.EqualError(t, err, fieldError("LineThree", ErrNonAlphanumeric, rft.LineThree).Error())
 }
 
-// TestParseRemittanceFreeTextWrongLength parses a wrong RemittanceFreeText record length
-func TestParseRemittanceFreeTextWrongLength(t *testing.T) {
-	var line = "{8750}*"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseRemittanceFreeText()
-
-	require.EqualError(t, err, "line:0 record:RemittanceFreeText wire.TagWrongLengthErr must be [8, 429] characters and found 7")
-}
-
 // TestParseRemittanceFreeTextReaderParseError parses a wrong RemittanceFreeText reader parse error
 func TestParseRemittanceFreeTextReaderParseError(t *testing.T) {
 	var line = "{8750}Re®ittance Free Text Line One*"

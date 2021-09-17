@@ -97,17 +97,6 @@ func TestProprietaryDocumentTypeCodeInvalid(t *testing.T) {
 	require.EqualError(t, err, fieldError("ProprietaryDocumentTypeCode", ErrInvalidProperty, prd.ProprietaryDocumentTypeCode).Error())
 }
 
-// TestParsePrimaryRemittanceDocumentWrongLength parses a wrong PrimaryRemittanceDocument record length
-func TestParsePrimaryRemittanceDocumentWrongLength(t *testing.T) {
-	var line = "{8400}AROI*"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parsePrimaryRemittanceDocument()
-
-	require.EqualError(t, err, "line:0 record:PrimaryRemittanceDocument wire.TagWrongLengthErr must be [12, 118] characters and found 11")
-}
-
 // TestParsePrimaryRemittanceDocumentReaderParseError parses a wrong PrimaryRemittanceDocument reader parse error
 func TestParsePrimaryRemittanceDocumentReaderParseError(t *testing.T) {
 	var line = "{8400}ZZZZ*111*"

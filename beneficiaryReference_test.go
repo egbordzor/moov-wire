@@ -31,17 +31,6 @@ func TestBeneficiaryReferenceAlphaNumeric(t *testing.T) {
 	require.EqualError(t, err, fieldError("BeneficiaryReference", ErrNonAlphanumeric, br.BeneficiaryReference).Error())
 }
 
-// TestParseBeneficiaryReferenceWrongLength parses a wrong BeneficiaryReference record length
-func TestParseBeneficiaryReferenceWrongLength(t *testing.T) {
-	var line = "{4320}"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseBeneficiaryReference()
-
-	require.EqualError(t, err, "line:0 record:BeneficiaryReference wire.TagWrongLengthErr must be [8, 23] characters and found 6")
-}
-
 // TestParseBeneficiaryReferenceReaderParseError parses a wrong BeneficiaryReference reader parse error
 func TestParseBeneficiaryReferenceReaderParseError(t *testing.T) {
 	var line = "{4320}Reference®      *"

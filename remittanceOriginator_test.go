@@ -408,17 +408,6 @@ func TestRemittanceOriginatorDateBirthPlaceInvalid(t *testing.T) {
 	require.EqualError(t, err, fieldError("DateBirthPlace", ErrInvalidProperty, ro.RemittanceData.DateBirthPlace).Error())
 }
 
-// TestParseRemittanceOriginatorWrongLength parses a wrong RemittanceOriginator record length
-func TestParseRemittanceOriginatorWrongLength(t *testing.T) {
-	var line = "{8300}*"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseRemittanceOriginator()
-
-	require.EqualError(t, err, "line:0 record:RemittanceOriginator wire.TagWrongLengthErr must be [14, 3469] characters and found 7")
-}
-
 // TestParseRemittanceOriginatorReaderParseError parses a wrong RemittanceOriginator reader parse error
 func TestParseRemittanceOriginatorReaderParseError(t *testing.T) {
 	var line = "{8300}OICUSTName*111111*Bank**ADDR*Department*Sub-Department*Street Name*16*19405*AnyTown*PA*UA*®ddress Line One*"

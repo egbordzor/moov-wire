@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // SecondaryRemittanceDocument is the date of remittance document
@@ -43,13 +41,6 @@ func NewSecondaryRemittanceDocument() *SecondaryRemittanceDocument {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (srd *SecondaryRemittanceDocument) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 10 || dataLen > 118 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [10, 118] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	srd.tag = record[:6]
 	srd.DocumentTypeCode = srd.parseStringField(record[6:10])
 

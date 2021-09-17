@@ -62,17 +62,6 @@ func TestInstructedAmountCurrencyCodeValid(t *testing.T) {
 	require.EqualError(t, err, fieldError("CurrencyCode", ErrNonCurrencyCode, ia.CurrencyCode).Error())
 }
 
-// TestParseInstructedAmountWrongLength parses a wrong InstructedAmount record length
-func TestParseInstructedAmountWrongLength(t *testing.T) {
-	var line = "{3710}USD*"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseInstructedAmount()
-
-	require.EqualError(t, err, "line:0 record:InstructedAmount wire.TagWrongLengthErr must be [12, 25] characters and found 10")
-}
-
 // TestParseInstructedAmountReaderParseError parses a wrong InstructedAmount reader parse error
 func TestParseInstructedAmountReaderParseError(t *testing.T) {
 	var line = "{3710}USD000000004567Z89*"

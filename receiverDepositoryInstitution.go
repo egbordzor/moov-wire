@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // ReceiverDepositoryInstitution {3400}
@@ -39,14 +37,6 @@ func NewReceiverDepositoryInstitution() *ReceiverDepositoryInstitution {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (rdi *ReceiverDepositoryInstitution) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 15 || dataLen > 34 {
-		return TagWrongLengthErr{
-			Message:   fmt.Sprintf("must be [15, 34] characters and found %d", dataLen),
-			TagLength: 34,
-			Length:    dataLen,
-		}
-	}
 	rdi.tag = record[:6]
 	rdi.ReceiverABANumber = rdi.parseStringField(record[6:15])
 	if delim := strings.IndexByte(record, '*'); delim > 0 {

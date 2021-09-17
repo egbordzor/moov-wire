@@ -116,17 +116,6 @@ func TestBeneficiaryFIIdentifierRequired(t *testing.T) {
 	require.EqualError(t, err, fieldError("Identifier", ErrFieldRequired).Error())
 }
 
-// TestParseBeneficiaryFIWrongLength parses a wrong BeneficiaryFI record length
-func TestParseBeneficiaryFIWrongLength(t *testing.T) {
-	var line = "{4100}D"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseBeneficiaryFI()
-
-	require.EqualError(t, err, "line:0 record:BeneficiaryFI wire.TagWrongLengthErr must be [12, 186] characters and found 7")
-}
-
 // TestParseBeneficiaryFIReaderParseError parses a wrong BeneficiaryFI reader parse error
 func TestParseBeneficiaryFIReaderParseError(t *testing.T) {
 	var line = "{4100}D123456789                         *F® Name                            *Address One                        *Address Two                        *Address Three                      *"

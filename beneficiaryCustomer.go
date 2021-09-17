@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // BeneficiaryCustomer is the beneficiary customer
@@ -37,13 +35,6 @@ func NewBeneficiaryCustomer() *BeneficiaryCustomer {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (bc *BeneficiaryCustomer) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 8 || dataLen > 192 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [8, 192] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	bc.tag = record[:6]
 
 	optionalFields := strings.Split(record[6:], "*")

@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // ExchangeRate is the ExchangeRate of the wire
@@ -38,13 +36,6 @@ func NewExchangeRate() *ExchangeRate {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (eRate *ExchangeRate) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 9 || dataLen > 19 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [9, 19] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	eRate.tag = record[:6]
 
 	if delim := strings.IndexByte(record, '*'); delim > 0 {

@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // RemittanceFreeText is the remittance free text
@@ -41,13 +39,6 @@ func NewRemittanceFreeText() *RemittanceFreeText {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (rft *RemittanceFreeText) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 8 || dataLen > 429 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [8, 429] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	rft.tag = record[:6]
 
 	optionalFields := strings.Split(record[6:], "*")

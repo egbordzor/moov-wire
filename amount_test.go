@@ -41,17 +41,6 @@ func TestAmountRequired(t *testing.T) {
 	require.EqualError(t, err, fieldError("Amount", ErrFieldRequired).Error())
 }
 
-// TestParseAmountWrongLength parses a wrong Amount record length
-func TestParseAmountWrongLength(t *testing.T) {
-	var line = "{2000}00"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseAmount()
-
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(18, len(r.line))).Error())
-}
-
 // TestParseAmountReaderParseError parses a wrong Amount reader parse error
 func TestParseAmountReaderParseError(t *testing.T) {
 	var line = "{2000}00000Z030022"

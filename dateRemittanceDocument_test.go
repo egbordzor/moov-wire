@@ -32,17 +32,6 @@ func TestDateRemittanceDocumentDateRemittanceDocumentRequired(t *testing.T) {
 	require.EqualError(t, err, fieldError("DateRemittanceDocument", ErrFieldRequired).Error())
 }
 
-// TestParseDateRemittanceDocumentWrongLength parses a wrong DateRemittanceDocument record length
-func TestParseDateRemittanceDocumentWrongLength(t *testing.T) {
-	var line = "{8650}20190509  "
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseDateRemittanceDocument()
-
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(14, len(r.line))).Error())
-}
-
 // TestParseDateRemittanceDocumentReaderParseError parses a wrong DateRemittanceDocument reader parse error
 func TestParseDateRemittanceDocumentReaderParseError(t *testing.T) {
 	var line = "{8650}14190509"

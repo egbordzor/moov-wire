@@ -95,17 +95,6 @@ func TestRemittanceSwiftLineSixAlphaNumeric(t *testing.T) {
 	require.EqualError(t, err, fieldError("SwiftLineSix", ErrInvalidProperty, ri.CoverPayment.SwiftLineSix).Error())
 }
 
-// TestParseRemittanceWrongLength parses a wrong Remittance record length
-func TestParseRemittanceWrongLength(t *testing.T) {
-	var line = "{7070}S"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseRemittance()
-
-	require.EqualError(t, err, "line:0 record:Remittance wire.TagWrongLengthErr must be [8, 156] characters and found 7")
-}
-
 // TestParseRemittanceReaderParseError parses a wrong Remittance reader parse error
 func TestParseRemittanceReaderParseError(t *testing.T) {
 	var line = "{7070}Swift*®wift Line One*"

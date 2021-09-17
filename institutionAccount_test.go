@@ -96,17 +96,6 @@ func TestInstitutionAccountSwiftLineSixAlphaNumeric(t *testing.T) {
 	require.EqualError(t, err, fieldError("SwiftLineSix", ErrInvalidProperty, iAccount.CoverPayment.SwiftLineSix).Error())
 }
 
-// TestParseInstitutionAccountWrongLength parses a wrong InstitutionAccount record length
-func TestParseInstitutionAccountWrongLength(t *testing.T) {
-	var line = "{7057}S"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseInstitutionAccount()
-
-	require.EqualError(t, err, "line:0 record:InstitutionAccount wire.TagWrongLengthErr must be [8, 192] characters and found 7")
-}
-
 // TestParseInstitutionAccountReaderParseError parses a wrong InstitutionAccount reader parse error
 func TestParseInstitutionAccountReaderParseError(t *testing.T) {
 	var line = "{7057}Swift*Swift ®ine One*"

@@ -55,17 +55,6 @@ func TestSenderABANumberRequired(t *testing.T) {
 	require.EqualError(t, err, fieldError("SenderABANumber", ErrFieldRequired, rdi.SenderABANumber).Error())
 }
 
-// TestParseSenderWrongLength parses a wrong Sender record length
-func TestParseSenderWrongLength(t *testing.T) {
-	var line = "{3100}0012*"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseSenderDepositoryInstitution()
-
-	require.EqualError(t, err, "line:0 record:SenderDepositoryInstitution wire.TagWrongLengthErr must be [15, 34] characters and found 11")
-}
-
 // TestParseSenderReaderParseError parses a wrong Sender reader parse error
 func TestParseSenderReaderParseError(t *testing.T) {
 	var line = "{3100}1210Z2882Wells Fargo NA   *"

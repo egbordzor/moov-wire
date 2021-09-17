@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // AmountNegotiatedDiscount is the amount negotiated discount
@@ -37,13 +35,6 @@ func NewAmountNegotiatedDiscount() *AmountNegotiatedDiscount {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (nd *AmountNegotiatedDiscount) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 13 || dataLen > 29 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [13, 29] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	nd.tag = record[:6]
 	nd.RemittanceAmount.CurrencyCode = nd.parseStringField(record[6:9])
 	if delim := strings.IndexByte(record, '*'); delim > 0 {

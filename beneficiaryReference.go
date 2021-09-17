@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // BeneficiaryReference is a reference for the beneficiary
@@ -37,13 +35,6 @@ func NewBeneficiaryReference() *BeneficiaryReference {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (br *BeneficiaryReference) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 8 || dataLen > 23 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [8, 23] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	br.tag = record[:6]
 
 	if delim := strings.IndexByte(record, '*'); delim > 0 {

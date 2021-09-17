@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // FIReceiverFI is the financial institution receiver financial institution
@@ -37,13 +35,6 @@ func NewFIReceiverFI() *FIReceiverFI {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (firfi *FIReceiverFI) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 8 || dataLen > 207 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [8, 207] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	firfi.tag = record[:6]
 
 	optionalFields := strings.Split(record[6:], "*")

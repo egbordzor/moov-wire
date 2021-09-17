@@ -52,17 +52,6 @@ func TestReceiverABANumberRequired(t *testing.T) {
 	require.EqualError(t, err, fieldError("ReceiverABANumber", ErrFieldRequired, rdi.ReceiverABANumber).Error())
 }
 
-// TestParseReceiverWrongLength parses a wrong Receiver record length
-func TestParseReceiverWrongLength(t *testing.T) {
-	var line = "{3400}00"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseReceiverDepositoryInstitution()
-
-	require.EqualError(t, err, "line:0 record:ReceiverDepositoryInstitution wire.TagWrongLengthErr must be [15, 34] characters and found 8")
-}
-
 // TestParseReceiverReaderParseError parses a wrong Receiver reader parse error
 func TestParseReceiverReaderParseError(t *testing.T) {
 	var line = "{3400}2313Z0104Citadel           *"

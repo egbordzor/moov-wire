@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // OriginatorToBeneficiary is the OriginatorToBeneficiary of the wire
@@ -43,13 +41,6 @@ func NewOriginatorToBeneficiary() *OriginatorToBeneficiary {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (ob *OriginatorToBeneficiary) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 11 || dataLen > 150 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [11, 150] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	ob.tag = record[:6]
 
 	optionalFields := strings.Split(record[6:], "*")

@@ -7,7 +7,6 @@ package wire
 import (
 	"encoding/json"
 	"strings"
-	"unicode/utf8"
 )
 
 // SenderSupplied {1500}
@@ -45,9 +44,6 @@ func NewSenderSupplied() *SenderSupplied {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (ss *SenderSupplied) Parse(record string) error {
-	if utf8.RuneCountInString(record) != 18 {
-		return NewTagWrongLengthErr(18, utf8.RuneCountInString(record))
-	}
 	ss.tag = record[0:6]
 	ss.FormatVersion = ss.parseStringField(record[6:8])
 	ss.UserRequestCorrelation = ss.parseStringField(record[8:16])

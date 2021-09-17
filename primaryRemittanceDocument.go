@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // PrimaryRemittanceDocument is primary remittance document
@@ -43,13 +41,6 @@ func NewPrimaryRemittanceDocument() *PrimaryRemittanceDocument {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (prd *PrimaryRemittanceDocument) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 12 || dataLen > 118 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [12, 118] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	prd.tag = record[:6]
 	prd.DocumentTypeCode = record[6:10]
 

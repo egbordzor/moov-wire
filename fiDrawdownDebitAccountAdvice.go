@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // FIDrawdownDebitAccountAdvice is the financial institution drawdown debit account advice
@@ -37,13 +35,6 @@ func NewFIDrawdownDebitAccountAdvice() *FIDrawdownDebitAccountAdvice {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (debitDDAdvice *FIDrawdownDebitAccountAdvice) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 9 || dataLen > 206 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [9, 206] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
 	debitDDAdvice.tag = record[:6]
 	debitDDAdvice.Advice.AdviceCode = debitDDAdvice.parseStringField(record[6:9])
 

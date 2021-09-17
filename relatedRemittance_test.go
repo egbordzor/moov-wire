@@ -241,17 +241,6 @@ func TestRelatedRemittanceCountryOfResidenceAlphaNumeric(t *testing.T) {
 	require.EqualError(t, err, fieldError("CountryOfResidence", ErrNonAlphanumeric, rr.RemittanceData.CountryOfResidence).Error())
 }
 
-// TestParseRelatedRemittanceWrongLength parses a wrong RelatedRemittance record length
-func TestParseRelatedRemittanceWrongLength(t *testing.T) {
-	var line = "{8250}"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parseRelatedRemittance()
-
-	require.EqualError(t, err, "line:0 record:RelatedRemittance wire.TagWrongLengthErr must be [7, 3061] characters and found 6")
-}
-
 // TestParseRelatedRemittanceReaderParseError parses a wrong RelatedRemittance reader parse error
 func TestParseRelatedRemittanceReaderParseError(t *testing.T) {
 	var line = "{8250}Remittance ®dentification*"

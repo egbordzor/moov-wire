@@ -6,9 +6,7 @@ package wire
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 // RemittanceOriginator is remittance originator
@@ -57,14 +55,6 @@ func NewRemittanceOriginator() *RemittanceOriginator {
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (ro *RemittanceOriginator) Parse(record string) error {
-	dataLen := utf8.RuneCountInString(record)
-	if dataLen < 14 || dataLen > 3469 {
-		return TagWrongLengthErr{
-			Message: fmt.Sprintf("must be [14, 3469] characters and found %d", dataLen),
-			Length:  dataLen,
-		}
-	}
-
 	ro.tag = record[:6]
 	ro.IdentificationType = ro.parseStringField(record[6:8])
 	ro.IdentificationCode = ro.parseStringField(record[8:12])

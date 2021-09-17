@@ -31,17 +31,6 @@ func TestPreviousMessageIdentifierAlphaNumeric(t *testing.T) {
 	require.EqualError(t, err, fieldError("PreviousMessageIdentifier", ErrNonAlphanumeric, pmi.PreviousMessageIdentifier).Error())
 }
 
-// TestParsePreviousMessageIdentifierWrongLength parses a wrong PreviousMessageIdentifier record length
-func TestParsePreviousMessageIdentifierWrongLength(t *testing.T) {
-	var line = "{3500}Previous"
-	r := NewReader(strings.NewReader(line))
-	r.line = line
-
-	err := r.parsePreviousMessageIdentifier()
-
-	require.EqualError(t, err, r.parseError(NewTagWrongLengthErr(28, len(r.line))).Error())
-}
-
 // TestParsePreviousMessageIdentifierReaderParseError parses a wrong PreviousMessageIdentifier reader parse error
 func TestParsePreviousMessageIdentifierReaderParseError(t *testing.T) {
 	var line = "{3500}Previous®Message Ident"
