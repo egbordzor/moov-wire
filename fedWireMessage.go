@@ -158,9 +158,6 @@ func (fwm *FEDWireMessage) verify() error {
 	if err := fwm.validateInstructingFI(); err != nil {
 		return err
 	}
-	if err := fwm.validateOriginatorToBeneficiary(); err != nil {
-		return err
-	}
 	if err := fwm.validateFIIntermediaryFI(); err != nil {
 		return err
 	}
@@ -1071,27 +1068,6 @@ func (fwm *FEDWireMessage) validateInstructingFI() error {
 		}
 		if fwm.OriginatorFI == nil {
 			return fieldError("OriginatorFI", ErrFieldRequired)
-		}
-		return nil
-	}
-	return nil
-}
-
-// If present, Beneficiary and Originator (or OriginatorOptionF if BusinessFunctionCode is CustomerTransferPlus) are mandatory.
-func (fwm *FEDWireMessage) validateOriginatorToBeneficiary() error {
-	if fwm.OriginatorToBeneficiary != nil {
-		if fwm.Beneficiary == nil {
-			return fieldError("Beneficiary", ErrFieldRequired)
-		}
-		switch fwm.BusinessFunctionCode.BusinessFunctionCode {
-		case CustomerTransferPlus:
-			if fwm.OriginatorOptionF == nil {
-				return fieldError("OriginatorOptionF", ErrFieldRequired)
-			}
-		default:
-			if fwm.Originator == nil {
-				return fieldError("Originator", ErrFieldRequired)
-			}
 		}
 		return nil
 	}
