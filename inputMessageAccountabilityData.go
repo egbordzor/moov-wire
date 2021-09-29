@@ -63,8 +63,17 @@ func (imad *InputMessageAccountabilityData) UnmarshalJSON(data []byte) error {
 // String writes InputMessageAccountabilityData
 func (imad *InputMessageAccountabilityData) String() string {
 	var buf strings.Builder
-	buf.Grow(22)
+	buf.Grow(28)
 	buf.WriteString(imad.tag)
+	buf.WriteString(imad.InputCycleDateField())
+	buf.WriteString(imad.InputSourceField())
+	buf.WriteString(imad.InputSequenceNumberField())
+	return buf.String()
+}
+
+func (imad *InputMessageAccountabilityData) IMAD() string {
+	var buf strings.Builder
+	buf.Grow(22)
 	buf.WriteString(imad.InputCycleDateField())
 	buf.WriteString(imad.InputSourceField())
 	buf.WriteString(imad.InputSequenceNumberField())
