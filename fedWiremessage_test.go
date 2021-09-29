@@ -197,43 +197,6 @@ func TestFEDWireMessage_validateInstructingFI(t *testing.T) {
 	require.EqualError(t, err, expected)
 }
 
-func TestNewFEDWireMessage_validateOriginatorToBeneficiary(t *testing.T) {
-	fwm := mockCustomerTransferData()
-	fwm.OriginatorToBeneficiary = mockOriginatorToBeneficiary()
-	fwm.BusinessFunctionCode.BusinessFunctionCode = CustomerTransfer
-
-	// Beneficiary required field check
-	err := fwm.validateOriginatorToBeneficiary()
-
-	expected := fieldError("Beneficiary", ErrFieldRequired).Error()
-	require.EqualError(t, err, expected)
-
-	fwm.Beneficiary = mockBeneficiary()
-
-	// Originator required Field check
-	err = fwm.validateOriginatorToBeneficiary()
-
-	expected = fieldError("Originator", ErrFieldRequired).Error()
-	require.EqualError(t, err, expected)
-
-	fwm.Originator = mockOriginator()
-	fwm.BusinessFunctionCode.BusinessFunctionCode = CustomerTransferPlus
-
-	// OriginatorOptionF required Field check
-	err = fwm.validateOriginatorToBeneficiary()
-
-	expected = fieldError("OriginatorOptionF", ErrFieldRequired).Error()
-	require.EqualError(t, err, expected)
-
-	// check beneficiary still required
-	fwm.Beneficiary = nil
-
-	err = fwm.validateOriginatorToBeneficiary()
-
-	expected = fieldError("Beneficiary", ErrFieldRequired).Error()
-	require.EqualError(t, err, expected)
-}
-
 func TestFEDWireMessage_validateFIIntermediaryFI(t *testing.T) {
 	fwm := mockCustomerTransferData()
 	fwm.FIIntermediaryFI = mockFIIntermediaryFI()
