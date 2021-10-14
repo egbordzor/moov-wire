@@ -4,6 +4,10 @@
 
 package wire
 
+import (
+	"strings"
+)
+
 // FIToFI is financial institution to financial institution
 type FIToFI struct {
 	// LineOne
@@ -18,4 +22,8 @@ type FIToFI struct {
 	LineFive string `json:"lineFive,omitempty"`
 	// LineSix
 	LineSix string `json:"lineSix,omitempty"`
+}
+
+func (ff *FIToFI) String() string {
+	return strings.TrimSpace(strings.Join([]string{ff.LineOne, ff.LineTwo, ff.LineThree, ff.LineFour, ff.LineFive, ff.LineSix}, ""))
 }
