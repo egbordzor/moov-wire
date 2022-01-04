@@ -89,25 +89,31 @@ func (bifi *BeneficiaryIntermediaryFI) String() string {
 // The first error encountered is returned and stops that parsing.
 // If ID Code is present, Identifier is mandatory and vice versa.
 func (bifi *BeneficiaryIntermediaryFI) Validate() error {
-	if err := bifi.fieldInclusion(); err != nil {
-		return err
-	}
 	if bifi.tag != TagBeneficiaryIntermediaryFI {
 		return fieldError("tag", ErrValidTagForType, bifi.tag)
 	}
-	if err := bifi.isIdentificationCode(bifi.FinancialInstitution.IdentificationCode); err != nil {
-		return fieldError("IdentificationCode", err, bifi.FinancialInstitution.IdentificationCode)
+
+	if bifi.FinancialInstitution.IdentificationCode != "" && bifi.FinancialInstitution.IdentificationCode != " " {
+		if err := bifi.fieldInclusion(); err != nil {
+			return err
+		}
+
+		if err := bifi.isIdentificationCode(bifi.FinancialInstitution.IdentificationCode); err != nil {
+			return fieldError("IdentificationCode", err, bifi.FinancialInstitution.IdentificationCode)
+		}
+
+		// Can only be these Identification Codes
+		switch bifi.FinancialInstitution.IdentificationCode {
+		case
+			"B", "C", "D", "F", "U":
+		default:
+			return fieldError("IdentificationCode", ErrIdentificationCode, bifi.FinancialInstitution.IdentificationCode)
+		}
+		if err := bifi.isAlphanumeric(bifi.FinancialInstitution.Identifier); err != nil {
+			return fieldError("Identifier", err, bifi.FinancialInstitution.Identifier)
+		}
 	}
-	// Can only be these Identification Codes
-	switch bifi.FinancialInstitution.IdentificationCode {
-	case
-		"B", "C", "D", "F", "U":
-	default:
-		return fieldError("IdentificationCode", ErrIdentificationCode, bifi.FinancialInstitution.IdentificationCode)
-	}
-	if err := bifi.isAlphanumeric(bifi.FinancialInstitution.Identifier); err != nil {
-		return fieldError("Identifier", err, bifi.FinancialInstitution.Identifier)
-	}
+
 	if err := bifi.isAlphanumeric(bifi.FinancialInstitution.Name); err != nil {
 		return fieldError("Name", err, bifi.FinancialInstitution.Name)
 	}
