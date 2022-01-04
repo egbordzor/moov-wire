@@ -94,7 +94,7 @@ func (ofi *OriginatorFI) Validate() error {
 	}
 
 	// Identification code can be a " " which means its not present
-	if ofi.FinancialInstitution.IdentificationCode != " " {
+	if ofi.FinancialInstitution.IdentificationCode != " " && ofi.FinancialInstitution.IdentificationCode != "" {
 		if err := ofi.fieldInclusion(); err != nil {
 			return err
 		}
