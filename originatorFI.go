@@ -89,24 +89,30 @@ func (ofi *OriginatorFI) String() string {
 // The first error encountered is returned and stops that parsing.
 // If ID Code is present, Identifier is mandatory and vice versa.
 func (ofi *OriginatorFI) Validate() error {
-	if err := ofi.fieldInclusion(); err != nil {
-		return err
-	}
 	if ofi.tag != TagOriginatorFI {
 		return fieldError("tag", ErrValidTagForType, ofi.tag)
 	}
-	if err := ofi.isIdentificationCode(ofi.FinancialInstitution.IdentificationCode); err != nil {
-		return fieldError("IdentificationCode", err, ofi.FinancialInstitution.IdentificationCode)
-	}
-	// Can only be these Identification Codes
-	switch ofi.FinancialInstitution.IdentificationCode {
-	case
-		"B", "C", "D", "F", "U":
-	default:
-		return fieldError("IdentificationCode", ErrIdentificationCode, ofi.FinancialInstitution.IdentificationCode)
-	}
-	if err := ofi.isAlphanumeric(ofi.FinancialInstitution.Identifier); err != nil {
-		return fieldError("Identifier", err, ofi.FinancialInstitution.Identifier)
+
+	// Identification code can be a " " which means its not present
+	if ofi.FinancialInstitution.IdentificationCode != " " {
+		if err := ofi.fieldInclusion(); err != nil {
+			return err
+		}
+
+		// Identification code present
+		if err := ofi.isIdentificationCode(ofi.FinancialInstitution.IdentificationCode); err != nil {
+			return fieldError("IdentificationCode", err, ofi.FinancialInstitution.IdentificationCode)
+		}
+		// Can only be these Identification Codes
+		switch ofi.FinancialInstitution.IdentificationCode {
+		case
+			"B", "C", "D", "F", "U":
+		default:
+			return fieldError("IdentificationCode", ErrIdentificationCode, ofi.FinancialInstitution.IdentificationCode)
+		}
+		if err := ofi.isAlphanumeric(ofi.FinancialInstitution.Identifier); err != nil {
+			return fieldError("Identifier", err, ofi.FinancialInstitution.Identifier)
+		}
 	}
 	if err := ofi.isAlphanumeric(ofi.FinancialInstitution.Name); err != nil {
 		return fieldError("Name", err, ofi.FinancialInstitution.Name)
