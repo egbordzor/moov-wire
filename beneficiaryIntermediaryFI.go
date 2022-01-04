@@ -93,7 +93,7 @@ func (bifi *BeneficiaryIntermediaryFI) Validate() error {
 		return fieldError("tag", ErrValidTagForType, bifi.tag)
 	}
 
-	if bifi.FinancialInstitution.Identifier != "" && bifi.FinancialInstitution.Identifier != " " {
+	if bifi.FinancialInstitution.IdentificationCode != "" && bifi.FinancialInstitution.IdentificationCode != " " {
 		if err := bifi.fieldInclusion(); err != nil {
 			return err
 		}
