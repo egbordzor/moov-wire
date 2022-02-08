@@ -82,6 +82,18 @@ func (omad *OutputMessageAccountabilityData) String() string {
 	return buf.String()
 }
 
+func (omad *OutputMessageAccountabilityData) OMAD() string {
+	var buf strings.Builder
+	buf.Grow(34)
+	buf.WriteString(omad.OutputCycleDateField())
+	buf.WriteString(omad.OutputDestinationIDField())
+	buf.WriteString(omad.OutputSequenceNumberField())
+	buf.WriteString(omad.OutputDateField())
+	buf.WriteString(omad.OutputTimeField())
+	buf.WriteString(omad.OutputFRBApplicationIdentificationField())
+	return buf.String()
+}
+
 // Validate performs WIRE format rule checks on OutputMessageAccountabilityData and returns an error if not Validated
 // The first error encountered is returned and stops that parsing.
 func (omad *OutputMessageAccountabilityData) Validate() error {
