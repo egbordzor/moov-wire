@@ -84,13 +84,10 @@ func (omad *OutputMessageAccountabilityData) String() string {
 
 func (omad *OutputMessageAccountabilityData) OMAD() string {
 	var buf strings.Builder
-	buf.Grow(34)
+	buf.Grow(22)
 	buf.WriteString(omad.OutputCycleDateField())
 	buf.WriteString(omad.OutputDestinationIDField())
 	buf.WriteString(omad.OutputSequenceNumberField())
-	buf.WriteString(omad.OutputDateField())
-	buf.WriteString(omad.OutputTimeField())
-	buf.WriteString(omad.OutputFRBApplicationIdentificationField())
 	return buf.String()
 }
 
