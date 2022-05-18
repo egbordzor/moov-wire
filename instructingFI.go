@@ -93,24 +93,22 @@ func (ifi *InstructingFI) Validate() error {
 		return fieldError("tag", ErrValidTagForType, ifi.tag)
 	}
 
-	if ifi.FinancialInstitution.IdentificationCode != "" && ifi.FinancialInstitution.IdentificationCode != " " {
-		if err := ifi.fieldInclusion(); err != nil {
-			return err
-		}
+	if err := ifi.fieldInclusion(); err != nil {
+		return err
+	}
 
-		if err := ifi.isIdentificationCode(ifi.FinancialInstitution.IdentificationCode); err != nil {
-			return fieldError("IdentificationCode", err, ifi.FinancialInstitution.IdentificationCode)
-		}
-		// Can only be these Identification Codes
-		switch ifi.FinancialInstitution.IdentificationCode {
-		case
-			"B", "C", "D", "F", "U":
-		default:
-			return fieldError("IdentificationCode", ErrIdentificationCode, ifi.FinancialInstitution.IdentificationCode)
-		}
-		if err := ifi.isAlphanumeric(ifi.FinancialInstitution.Identifier); err != nil {
-			return fieldError("Identifier", err, ifi.FinancialInstitution.Identifier)
-		}
+	if err := ifi.isIdentificationCode(ifi.FinancialInstitution.IdentificationCode); err != nil {
+		return fieldError("IdentificationCode", err, ifi.FinancialInstitution.IdentificationCode)
+	}
+	// Can only be these Identification Codes
+	switch ifi.FinancialInstitution.IdentificationCode {
+	case
+		"", "B", "C", "D", "F", "U":
+	default:
+		return fieldError("IdentificationCode", ErrIdentificationCode, ifi.FinancialInstitution.IdentificationCode)
+	}
+	if err := ifi.isAlphanumeric(ifi.FinancialInstitution.Identifier); err != nil {
+		return fieldError("Identifier", err, ifi.FinancialInstitution.Identifier)
 	}
 
 	if err := ifi.isAlphanumeric(ifi.FinancialInstitution.Name); err != nil {

@@ -184,6 +184,7 @@ func (v *validator) isTransactionTypeCode(code string) error {
 func (v *validator) isIdentificationCode(code string) error {
 	switch code {
 	case
+		"",
 		SWIFTBankIdentifierCode,
 		CHIPSParticipant,
 		DemandDepositAccountNumber,

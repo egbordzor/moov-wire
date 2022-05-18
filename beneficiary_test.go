@@ -36,6 +36,13 @@ func TestBeneficiaryIdentificationCodeValid(t *testing.T) {
 	require.EqualError(t, err, fieldError("IdentificationCode", ErrIdentificationCode, ben.Personal.IdentificationCode).Error())
 }
 
+func TestBeneficiaryIdentificationCodeMissing(t *testing.T) {
+	ben := mockBeneficiary()
+	ben.Personal.IdentificationCode = ""
+	ben.Personal.Identifier = ""
+	require.NoError(t, ben.Validate())
+}
+
 // TestBeneficiaryIdentifierAlphaNumeric validates Beneficiary Identifier is alphanumeric
 func TestBeneficiaryIdentifierAlphaNumeric(t *testing.T) {
 	ben := mockBeneficiary()
