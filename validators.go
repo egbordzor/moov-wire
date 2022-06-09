@@ -550,9 +550,6 @@ func (v *validator) validateOptionFLine(s string) error {
 	if s[1:2] != "/" {
 		return ErrOptionFLine
 	}
-	if strings.TrimSpace(s[2:3]) == "" {
-		return ErrOptionFLine
-	}
 	an := strings.TrimSpace(s[2:])
 	if alphanumericRegex.MatchString(an) {
 		return ErrOptionFLine
