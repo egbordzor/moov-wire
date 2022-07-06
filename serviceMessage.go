@@ -52,49 +52,51 @@ func NewServiceMessage() *ServiceMessage {
 	return sm
 }
 
+func (sm *ServiceMessage) AllLines() []*string {
+	return []*string{
+		&sm.LineOne,
+		&sm.LineTwo,
+		&sm.LineThree,
+		&sm.LineFour,
+		&sm.LineFive,
+		&sm.LineSix,
+		&sm.LineSeven,
+		&sm.LineEight,
+		&sm.LineNine,
+		&sm.LineTen,
+		&sm.LineEleven,
+	}
+}
+
+func (sm *ServiceMessage) FullText() string {
+	allLines := []string{
+		sm.LineOne,
+		sm.LineTwo,
+		sm.LineThree,
+		sm.LineFour,
+		sm.LineFive,
+		sm.LineSix,
+		sm.LineSeven,
+		sm.LineEight,
+		sm.LineNine,
+		sm.LineTen,
+		sm.LineEleven,
+	}
+	return strings.Join(allLines, "")
+}
+
 // Parse takes the input string and parses the ServiceMessage values
 //
 // Parse provides no guarantee about all fields being filled in. Callers should make a Validate() call to confirm
 // successful parsing and data validity.
 func (sm *ServiceMessage) Parse(record string) error {
 	sm.tag = record[:6]
-
-	optionalFields := strings.Split(record[6:], "*")
-	if len(optionalFields) >= 1 {
-		sm.LineOne = sm.parseStringField(optionalFields[0])
-	}
-	if len(optionalFields) >= 2 {
-		sm.LineTwo = sm.parseStringField(optionalFields[1])
-	}
-	if len(optionalFields) >= 3 {
-		sm.LineThree = sm.parseStringField(optionalFields[2])
-	}
-	if len(optionalFields) >= 4 {
-		sm.LineFour = sm.parseStringField(optionalFields[3])
-	}
-	if len(optionalFields) >= 5 {
-		sm.LineFive = sm.parseStringField(optionalFields[4])
-	}
-	if len(optionalFields) >= 6 {
-		sm.LineSix = sm.parseStringField(optionalFields[5])
-	}
-	if len(optionalFields) >= 7 {
-		sm.LineSeven = sm.parseStringField(optionalFields[6])
-	}
-	if len(optionalFields) >= 8 {
-		sm.LineEight = sm.parseStringField(optionalFields[7])
-	}
-	if len(optionalFields) >= 9 {
-		sm.LineNine = sm.parseStringField(optionalFields[8])
-	}
-	if len(optionalFields) >= 10 {
-		sm.LineTen = sm.parseStringField(optionalFields[9])
-	}
-	if len(optionalFields) >= 11 {
-		sm.LineEleven = sm.parseStringField(optionalFields[10])
-	}
-	if len(optionalFields) >= 12 {
-		sm.LineTwelve = sm.parseStringField(optionalFields[11])
+	allLines := sm.AllLines()
+	for i, v := range strings.Split(record[6:], "*") {
+		if i >= len(allLines) {
+			break
+		}
+		*allLines[i] = v
 	}
 	return nil
 }
@@ -118,18 +120,18 @@ func (sm *ServiceMessage) String() string {
 	var buf strings.Builder
 	buf.Grow(426)
 	buf.WriteString(sm.tag)
-	buf.WriteString(strings.TrimSpace(sm.LineOneField()) + "*")
-	buf.WriteString(strings.TrimSpace(sm.LineTwoField()) + "*")
-	buf.WriteString(strings.TrimSpace(sm.LineThreeField()) + "*")
-	buf.WriteString(strings.TrimSpace(sm.LineFourField()) + "*")
-	buf.WriteString(strings.TrimSpace(sm.LineFiveField()) + "*")
-	buf.WriteString(strings.TrimSpace(sm.LineSixField()) + "*")
-	buf.WriteString(strings.TrimSpace(sm.LineSevenField()) + "*")
-	buf.WriteString(strings.TrimSpace(sm.LineEightField()) + "*")
-	buf.WriteString(strings.TrimSpace(sm.LineNineField()) + "*")
-	buf.WriteString(strings.TrimSpace(sm.LineTenField()) + "*")
-	buf.WriteString(strings.TrimSpace(sm.LineElevenField()) + "*")
-	buf.WriteString(strings.TrimSpace(sm.LineTwelveField()) + "*")
+	buf.WriteString(sm.LineOneField() + "*")
+	buf.WriteString(sm.LineTwoField() + "*")
+	buf.WriteString(sm.LineThreeField() + "*")
+	buf.WriteString(sm.LineFourField() + "*")
+	buf.WriteString(sm.LineFiveField() + "*")
+	buf.WriteString(sm.LineSixField() + "*")
+	buf.WriteString(sm.LineSevenField() + "*")
+	buf.WriteString(sm.LineEightField() + "*")
+	buf.WriteString(sm.LineNineField() + "*")
+	buf.WriteString(sm.LineTenField() + "*")
+	buf.WriteString(sm.LineElevenField() + "*")
+	buf.WriteString(sm.LineTwelveField() + "*")
 	return sm.cleanupDelimiters(buf.String())
 }
 
