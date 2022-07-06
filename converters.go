@@ -33,6 +33,13 @@ func (c *converters) alphaField(s string, max uint) string {
 	return s
 }
 
+func (c *converters) truncateString(s string, maxLen int) string {
+	if len(s) <= maxLen {
+		return s
+	}
+	return s[:maxLen]
+}
+
 // numericStringField right-justified zero filled
 func (c *converters) numericStringField(s string, max uint) string {
 	ln := uint(len(s))
