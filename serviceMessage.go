@@ -82,7 +82,7 @@ func (sm *ServiceMessage) FullText() string {
 		sm.LineTen,
 		sm.LineEleven,
 	}
-	return strings.Join(allLines, "")
+	return strings.Join(allLines, "\n")
 }
 
 // Parse takes the input string and parses the ServiceMessage values
