@@ -87,6 +87,10 @@ func (firfi *FIReceiverFI) String() string {
 	return firfi.cleanupDelimiters(buf.String())
 }
 
+func (firfi *FIReceiverFI) FullText(sep string) string {
+	return firfi.FIToFI.FullText(sep)
+}
+
 // Validate performs WIRE format rule checks on FIReceiverFI and returns an error if not Validated
 // The first error encountered is returned and stops that parsing.
 func (firfi *FIReceiverFI) Validate() error {

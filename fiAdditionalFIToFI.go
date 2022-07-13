@@ -87,6 +87,10 @@ func (fifi *FIAdditionalFIToFI) String() string {
 	return fifi.cleanupDelimiters(buf.String())
 }
 
+func (fifi *FIAdditionalFIToFI) FullText(sep string) string {
+	return fifi.AdditionalFIToFI.FullText(sep)
+}
+
 // Validate performs WIRE format rule checks on FIAdditionalFIToFI and returns an error if not Validated
 // The first error encountered is returned and stops that parsing.
 func (fifi *FIAdditionalFIToFI) Validate() error {

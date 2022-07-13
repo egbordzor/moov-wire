@@ -127,6 +127,15 @@ func (ob *OriginatorToBeneficiary) LineFourField() string {
 	return ob.alphaField(ob.LineFour, 35)
 }
 
-func (ob *OriginatorToBeneficiary) FullText() string {
-	return strings.TrimSpace(strings.Join([]string{ob.LineOne, ob.LineTwo, ob.LineThree, ob.LineFour}, ""))
+func (ob *OriginatorToBeneficiary) AllLines() []*string {
+	return []*string{
+		&ob.LineOne,
+		&ob.LineTwo,
+		&ob.LineThree,
+		&ob.LineFour,
+	}
+}
+
+func (ob *OriginatorToBeneficiary) FullText(sep string) string {
+	return ob.prettyMessage(ob.AllLines(), sep)
 }

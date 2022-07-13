@@ -68,21 +68,8 @@ func (sm *ServiceMessage) AllLines() []*string {
 	}
 }
 
-func (sm *ServiceMessage) FullText() string {
-	allLines := []string{
-		sm.LineOne,
-		sm.LineTwo,
-		sm.LineThree,
-		sm.LineFour,
-		sm.LineFive,
-		sm.LineSix,
-		sm.LineSeven,
-		sm.LineEight,
-		sm.LineNine,
-		sm.LineTen,
-		sm.LineEleven,
-	}
-	return strings.Join(allLines, "\n")
+func (sm *ServiceMessage) FullText(sep string) string {
+	return sm.prettyMessage(sm.AllLines(), sep)
 }
 
 // Parse takes the input string and parses the ServiceMessage values

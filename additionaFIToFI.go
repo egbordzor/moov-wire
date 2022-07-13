@@ -4,10 +4,9 @@
 
 package wire
 
-import "strings"
-
 // AdditionalFIToFI is additional financial institution to financial institution information
 type AdditionalFIToFI struct {
+	converters
 	// LineOne
 	LineOne string `json:"lineOne,omitempty"`
 	// LineTwo
@@ -22,6 +21,17 @@ type AdditionalFIToFI struct {
 	LineSix string `json:"lineSix,omitempty"`
 }
 
-func (ff *AdditionalFIToFI) String() string {
-	return strings.TrimSpace(strings.Join([]string{ff.LineOne, ff.LineTwo, ff.LineThree, ff.LineFour, ff.LineFive, ff.LineSix}, ""))
+func (ff *AdditionalFIToFI) AllLines() []*string {
+	return []*string{
+		&ff.LineOne,
+		&ff.LineTwo,
+		&ff.LineThree,
+		&ff.LineFour,
+		&ff.LineFive,
+		&ff.LineSix,
+	}
+}
+
+func (ff *AdditionalFIToFI) FullText(sep string) string {
+	return ff.prettyMessage(ff.AllLines(), sep)
 }

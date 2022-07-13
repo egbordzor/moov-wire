@@ -55,3 +55,14 @@ func (c *converters) cleanupDelimiters(line string) string {
 	re := regexp.MustCompile(`\*{2,}$`)
 	return re.ReplaceAllString(line, "*")
 }
+
+func (c *converters) prettyMessage(lines []*string, sep string) string {
+	var rv []string
+	for _, l := range lines {
+		if l == nil || strings.TrimSpace(*l) == "" {
+			continue
+		}
+		rv = append(rv, *l)
+	}
+	return strings.Join(rv, sep)
+}
