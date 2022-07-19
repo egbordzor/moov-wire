@@ -135,9 +135,9 @@ type FEDWireMessage struct {
 	ServiceMessage *ServiceMessage `json:"serviceMessage,omitempty"`
 }
 
-// verify checks basic WIRE rules. Assumes properly parsed records. Each validation func should
+// Validate checks basic WIRE rules. Assumes properly parsed records. Each validation func should
 // check for the expected relationships between fields within a FedWireMessage.
-func (fwm *FEDWireMessage) verify() error {
+func (fwm *FEDWireMessage) Validate() error {
 
 	if err := fwm.mandatoryFields(); err != nil {
 		return err

@@ -43,3 +43,4 @@ test/fuzz-reader/corpus/*.tar.gz
 /.idea/*
 
 .vscode
+vendor/
