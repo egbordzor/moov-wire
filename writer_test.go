@@ -224,7 +224,7 @@ func TestFEDWireMessageWriteBankTransfer(t *testing.T) {
 	fwm.ReceiverDepositoryInstitution = rdi
 	bfc := mockBusinessFunctionCode()
 	bfc.BusinessFunctionCode = "BTR"
-	bfc.TransactionTypeCode = "   "
+	bfc.TransactionTypeCode = ""
 	fwm.BusinessFunctionCode = bfc
 
 	// Other Transfer Information
@@ -378,7 +378,7 @@ func TestFEDWireMessageWriteCustomerTransferPlus(t *testing.T) {
 	fwm.ReceiverDepositoryInstitution = rdi
 	bfc := mockBusinessFunctionCode()
 	bfc.BusinessFunctionCode = CustomerTransferPlus
-	bfc.TransactionTypeCode = "   "
+	bfc.TransactionTypeCode = ""
 	fwm.BusinessFunctionCode = bfc
 
 	// Other Transfer Information
@@ -470,7 +470,7 @@ func TestFEDWireMessageWriteCheckSameDaySettlement(t *testing.T) {
 	fwm.ReceiverDepositoryInstitution = rdi
 	bfc := mockBusinessFunctionCode()
 	bfc.BusinessFunctionCode = CheckSameDaySettlement
-	bfc.TransactionTypeCode = "   "
+	bfc.TransactionTypeCode = ""
 	fwm.BusinessFunctionCode = bfc
 
 	// Other Transfer Information
@@ -546,7 +546,7 @@ func TestFEDWireMessageWriteDepositSendersAccount(t *testing.T) {
 	fwm.ReceiverDepositoryInstitution = rdi
 	bfc := mockBusinessFunctionCode()
 	bfc.BusinessFunctionCode = DepositSendersAccount
-	bfc.TransactionTypeCode = "   "
+	bfc.TransactionTypeCode = ""
 	fwm.BusinessFunctionCode = bfc
 
 	// Other Transfer Information
@@ -622,7 +622,7 @@ func TestFEDWireMessageWriteFEDFundsReturned(t *testing.T) {
 	fwm.ReceiverDepositoryInstitution = rdi
 	bfc := mockBusinessFunctionCode()
 	bfc.BusinessFunctionCode = FEDFundsReturned
-	bfc.TransactionTypeCode = "   "
+	bfc.TransactionTypeCode = ""
 	fwm.BusinessFunctionCode = bfc
 
 	// Other Transfer Information
@@ -698,7 +698,7 @@ func TestFEDWireMessageWriteFEDFundsSold(t *testing.T) {
 	fwm.ReceiverDepositoryInstitution = rdi
 	bfc := mockBusinessFunctionCode()
 	bfc.BusinessFunctionCode = FEDFundsSold
-	bfc.TransactionTypeCode = "   "
+	bfc.TransactionTypeCode = ""
 	fwm.BusinessFunctionCode = bfc
 
 	// Other Transfer Information
@@ -774,7 +774,7 @@ func TestFEDWireMessageWriteDrawdownRequest(t *testing.T) {
 	fwm.ReceiverDepositoryInstitution = rdi
 	bfc := mockBusinessFunctionCode()
 	bfc.BusinessFunctionCode = DrawdownResponse
-	bfc.TransactionTypeCode = "   "
+	bfc.TransactionTypeCode = ""
 	fwm.BusinessFunctionCode = bfc
 
 	// Other Transfer Information
@@ -850,7 +850,7 @@ func TestFEDWireMessageWriteBankDrawdownRequest(t *testing.T) {
 	fwm.ReceiverDepositoryInstitution = rdi
 	bfc := mockBusinessFunctionCode()
 	bfc.BusinessFunctionCode = BankDrawDownRequest
-	bfc.TransactionTypeCode = "   "
+	bfc.TransactionTypeCode = ""
 	fwm.BusinessFunctionCode = bfc
 
 	// Other Transfer Information
@@ -930,7 +930,7 @@ func TestFEDWireMessageWriteCustomerCorporateDrawdownRequest(t *testing.T) {
 	fwm.ReceiverDepositoryInstitution = rdi
 	bfc := mockBusinessFunctionCode()
 	bfc.BusinessFunctionCode = CustomerCorporateDrawdownRequest
-	bfc.TransactionTypeCode = "   "
+	bfc.TransactionTypeCode = ""
 	fwm.BusinessFunctionCode = bfc
 
 	// Other Transfer Information
@@ -998,7 +998,7 @@ func TestFEDWireMessageWriteServiceMessage(t *testing.T) {
 	fwm.TypeSubType.SubTypeCode = RequestReversal
 
 	fwm.BusinessFunctionCode.BusinessFunctionCode = BFCServiceMessage
-	fwm.BusinessFunctionCode.TransactionTypeCode = "   "
+	fwm.BusinessFunctionCode.TransactionTypeCode = ""
 
 	file.AddFEDWireMessage(fwm)
 
@@ -1050,7 +1050,7 @@ func createMockServiceMessageData() FEDWireMessage {
 	fwm.ReceiverDepositoryInstitution = rdi
 	bfc := mockBusinessFunctionCode()
 	bfc.BusinessFunctionCode = BFCServiceMessage
-	bfc.TransactionTypeCode = "   "
+	bfc.TransactionTypeCode = ""
 	fwm.BusinessFunctionCode = bfc
 
 	// Other Transfer Information
@@ -1129,7 +1129,7 @@ func createCustomerTransferData() FEDWireMessage {
 	fwm.ReceiverDepositoryInstitution = rdi
 	bfc := mockBusinessFunctionCode()
 	bfc.BusinessFunctionCode = CustomerTransferPlus
-	bfc.TransactionTypeCode = "   "
+	bfc.TransactionTypeCode = ""
 	fwm.BusinessFunctionCode = bfc
 
 	// Other Transfer Information

@@ -164,7 +164,7 @@
             "senderReference": "Sender Reference"
         },
         "businessFunctionCode": {
-            "transactionTypeCode": "   ",
+            "transactionTypeCode": "",
             "businessFunctionCode": "BTR"
         },
         "receiverDepositoryInstitution": {
