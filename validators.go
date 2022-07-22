@@ -13,8 +13,7 @@ import (
 )
 
 var (
-	// upperAlphanumericRegex = regexp.MustCompile(`[^ A-Z0-9!"#$%&'()*+,-.\\/:;<>=?@\[\]^_{}|~]+`)
-	alphanumericRegex = regexp.MustCompile(`[^ \w!"#$%&'()*+,-.\\/:;<>=?@\[\]^_{}|~\x60]+`)
+	alphanumericRegex = regexp.MustCompile(`[^ \w!"#$%&'()+,-.\\/:;<>=?@_~\x60]+`)
 	numericRegex      = regexp.MustCompile(`[^0-9]`)
 	amountRegex       = regexp.MustCompile("[^0-9,.]")
 )
