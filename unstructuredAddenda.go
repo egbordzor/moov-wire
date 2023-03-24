@@ -13,13 +13,9 @@ import (
 type UnstructuredAddenda struct {
 	// tag
 	tag string
-	// AddendaLength  Addenda Length must be numeric, padded with leading zeros if less than four characters and must equal length of content in Addenda Information (e.g., if content of Addenda Information is 987 characters, Addenda Length must be 0987).
-	AddendaLength string `json:"addendaLength,omitempty"`
 	// Addenda
 	Addenda string `json:"addenda,omitempty"`
 
-	// validator is composed for data validation
-	validator
 	// converters is composed for WIRE to GoLang Converters
 	converters
 }
@@ -38,9 +34,7 @@ func NewUnstructuredAddenda() *UnstructuredAddenda {
 // successful parsing and data validity.
 func (ua *UnstructuredAddenda) Parse(record string) error {
 	ua.tag = record[:6]
-	ua.AddendaLength = record[6:10]
-	al := ua.parseNumField(ua.AddendaLength)
-	ua.Addenda = ua.parseStringField(record[10 : 10+al])
+	ua.Addenda = ua.parseStringField(record[6:])
 	return nil
 }
 
@@ -61,10 +55,8 @@ func (ua *UnstructuredAddenda) UnmarshalJSON(data []byte) error {
 // String writes UnstructuredAddenda
 func (ua *UnstructuredAddenda) String() string {
 	var buf strings.Builder
-	buf.Grow(10)
+	buf.Grow(len(ua.tag) + len(ua.Addenda))
 	buf.WriteString(ua.tag)
-	buf.WriteString(ua.AddendaLengthField())
-	buf.Grow(ua.parseNumField(ua.AddendaLength))
 	buf.WriteString(ua.AddendaField())
 	return buf.String()
 }
@@ -81,33 +73,16 @@ func (ua *UnstructuredAddenda) Validate() error {
 	if ua.tag != TagUnstructuredAddenda {
 		return fieldError("tag", ErrValidTagForType, ua.tag)
 	}
-	if err := ua.isNumeric(ua.AddendaLength); err != nil {
-		return fieldError("AddendaLength", err, ua.AddendaLength)
-	}
-	if err := ua.isAlphanumeric(ua.Addenda); err != nil {
-		return fieldError("Addenda", err, ua.Addenda)
-	}
-
 	return nil
 }
 
 // fieldInclusion validate mandatory fields. If fields are
 // invalid the WIRE will return an error.
 func (ua *UnstructuredAddenda) fieldInclusion() error {
-	// If UnstructuredAddenda is defined, AddendaLength is required, however it could be "0000"), but
-	// I'm not sure of the point
-	if ua.AddendaLength == "" {
-		return fieldError("AddendaLength", ErrFieldRequired)
-	}
 	return nil
-}
-
-// AddendaLengthField gets a string of the AddendaLength field
-func (ua *UnstructuredAddenda) AddendaLengthField() string {
-	return ua.alphaField(ua.AddendaLength, 4)
 }
 
 // AddendaField gets a string of the Addenda field
 func (ua *UnstructuredAddenda) AddendaField() string {
-	return ua.alphaField(ua.Addenda, uint(ua.parseNumField(ua.AddendaLength)))
+	return ua.Addenda
 }
