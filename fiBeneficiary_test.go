@@ -26,6 +26,16 @@ func TestMockFIBeneficiary(t *testing.T) {
 	require.NoError(t, fib.Validate(), "mockFIBeneficiary does not validate and will break other tests")
 }
 
+// TestBlankFieldsNotIncluded validates that blank fields will be skipped
+func TestBlankFieldsNotIncluded(t *testing.T) {
+	fib := mockFIBeneficiary()
+	fib.FIToFI.LineTwo = ""
+	fib.FIToFI.LineFour = ""
+	fib.FIToFI.LineSix = ""
+
+	require.Equal(t, "{6400}Line One*Line Three*Line Five*", fib.String())
+}
+
 // TestFIBeneficiaryLineOneAlphaNumeric validates FIBeneficiary LineOne is alphanumeric
 func TestFIBeneficiaryLineOneAlphaNumeric(t *testing.T) {
 	fib := mockFIBeneficiary()
