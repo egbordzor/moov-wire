@@ -79,22 +79,12 @@ func (fib *FIBeneficiary) String() string {
 	buf.Grow(207)
 	buf.WriteString(fib.tag)
 	buf.WriteString(strings.TrimSpace(fib.LineOneField()) + "*")
-	if strings.TrimSpace(fib.LineTwoField()) != "" {
-		buf.WriteString(strings.TrimSpace(fib.LineTwoField()) + "*")
-	}
-	if strings.TrimSpace(fib.LineThreeField()) != "" {
-		buf.WriteString(strings.TrimSpace(fib.LineThreeField()) + "*")
-	}
-	if strings.TrimSpace(fib.LineFourField()) != "" {
-		buf.WriteString(strings.TrimSpace(fib.LineFourField()) + "*")
-	}
-	if strings.TrimSpace(fib.LineFiveField()) != "" {
-		buf.WriteString(strings.TrimSpace(fib.LineFiveField()) + "*")
-	}
-	if strings.TrimSpace(fib.LineSixField()) != "" {
-		buf.WriteString(strings.TrimSpace(fib.LineSixField()) + "*")
-	}
-	return buf.String()
+	buf.WriteString(strings.TrimSpace(fib.LineTwoField()) + "*")
+	buf.WriteString(strings.TrimSpace(fib.LineThreeField()) + "*")
+	buf.WriteString(strings.TrimSpace(fib.LineFourField()) + "*")
+	buf.WriteString(strings.TrimSpace(fib.LineFiveField()) + "*")
+	buf.WriteString(strings.TrimSpace(fib.LineSixField()) + "*")
+	return fib.cleanupDelimiters(buf.String())
 }
 
 // Validate performs WIRE format rule checks on FIBeneficiary and returns an error if not Validated

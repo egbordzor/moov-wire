@@ -33,7 +33,7 @@ func TestBlankFieldsNotIncluded(t *testing.T) {
 	fib.FIToFI.LineFour = ""
 	fib.FIToFI.LineSix = ""
 
-	require.Equal(t, "{6400}Line One*Line Three*Line Five*", fib.String())
+	require.Equal(t, "{6400}Line One**Line Three**Line Five*", fib.String())
 }
 
 // TestFIBeneficiaryLineOneAlphaNumeric validates FIBeneficiary LineOne is alphanumeric
