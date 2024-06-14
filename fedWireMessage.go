@@ -356,10 +356,11 @@ func (fwm *FEDWireMessage) validateBankTransfer() error {
 
 // checkProhibitedBankTransferTags ensures there are no tags present in the message that are incompatible with the BankTransfer code
 // Tags NOT permitted:
-//   BusinessFunctionCode Element 02, LocalInstrument, PaymentNotification, Charges, InstructedAmount, ExchangeRate,
-//   Beneficiary Code SWIFTBICORBEIANDAccountNumber, AccountDebitedDrawdown, Originator Code SWIFTBICORBEIANDAccountNumber,
-//   OriginatorOptionF, AccountCreditedDrawdown, FIDrawdownDebitAccountAdvice, Any CoverPayment Information tag ({7xxx}),
-//   Any UnstructuredAddenda or remittance tags ({8xxx}), and ServiceMessage
+//
+//	BusinessFunctionCode Element 02, LocalInstrument, PaymentNotification, Charges, InstructedAmount, ExchangeRate,
+//	Beneficiary Code SWIFTBICORBEIANDAccountNumber, AccountDebitedDrawdown, Originator Code SWIFTBICORBEIANDAccountNumber,
+//	OriginatorOptionF, AccountCreditedDrawdown, FIDrawdownDebitAccountAdvice, Any CoverPayment Information tag ({7xxx}),
+//	Any UnstructuredAddenda or remittance tags ({8xxx}), and ServiceMessage
 func (fwm *FEDWireMessage) checkProhibitedBankTransferTags() error {
 	if fwm.BusinessFunctionCode != nil {
 		if strings.TrimSpace(fwm.BusinessFunctionCode.TransactionTypeCode) != "" {
@@ -398,9 +399,6 @@ func (fwm *FEDWireMessage) checkProhibitedBankTransferTags() error {
 	}
 	if fwm.ServiceMessage != nil {
 		return fieldError("ServiceMessage", ErrInvalidProperty, fwm.ServiceMessage)
-	}
-	if fwm.UnstructuredAddenda != nil {
-		return fieldError("UnstructuredAddenda", ErrInvalidProperty, fwm.UnstructuredAddenda)
 	}
 	if err := fwm.invalidCoverPaymentTags(); err != nil {
 		return err
@@ -442,8 +440,9 @@ func (fwm *FEDWireMessage) checkMandatoryCustomerTransferTags() error {
 
 // checkProhibitedCustomerTransferTags ensures there are no tags present in the message that are incompatible with the CustomerTransfer code
 // Tags NOT permitted:
-//   BusinessFunctionCode Element 02 = COV, LocalInstrument, PaymentNotification, AccountDebitedDrawdown, OriginatorOptionF, AccountCreditedDrawdown,
-//   FIDrawdownDebitAccountAdvice, any CoverPayment Information tag ({7xxx}), any UnstructuredAddenda or remittance tags ({8xxx}) and ServiceMessage
+//
+//	BusinessFunctionCode Element 02 = COV, LocalInstrument, PaymentNotification, AccountDebitedDrawdown, OriginatorOptionF, AccountCreditedDrawdown,
+//	FIDrawdownDebitAccountAdvice, any CoverPayment Information tag ({7xxx}), any UnstructuredAddenda or remittance tags ({8xxx}) and ServiceMessage
 func (fwm *FEDWireMessage) checkProhibitedCustomerTransferTags() error {
 	// This covers the edit requirement
 	if fwm.BusinessFunctionCode.TransactionTypeCode == "COV" {
@@ -500,7 +499,9 @@ func (fwm *FEDWireMessage) validateCustomerTransferPlus() error {
 
 // checkMandatoryCustomerTransferPlusTags checks for the tags required by CustomerTransferPlus in addition to the standard mandatoryFields
 // Additional mandatory fields:
-//   Beneficiary and Originator OR OriginatorOptionF
+//
+//	Beneficiary and Originator OR OriginatorOptionF
+//
 // If TypeSubType = ReversalTransfer or ReversalPriorDayTransfer, then PreviousMessageIdentifier is mandatory.
 // If LocalInstrument = SequenceBCoverPaymentStructured, then BeneficiaryReference, OrderingCustomer & BeneficiaryCustomer are mandatory.
 // If LocalInstrument = ANSIX12format, GeneralXMLformat, ISO20022XMLformat, NarrativeText, STP820format, SWIFTfield70 or UNEDIFACTformat, then UnstructuredAddenda is mandatory.
@@ -565,7 +566,9 @@ func (fwm *FEDWireMessage) checkMandatoryCustomerTransferPlusTags() error {
 
 // checkProhibitedCustomerTransferPlusTags ensures there are no tags present in the message that are incompatible with the CustomerTransferPlus code
 // Tags NOT permitted:
-//   BusinessFunctionCode.TransactionTypeCode, AccountDebitedDrawdown, AccountCreditedDrawdown, FIDrawdownDebitAccountAdvice, ServiceMessage
+//
+//	BusinessFunctionCode.TransactionTypeCode, AccountDebitedDrawdown, AccountCreditedDrawdown, FIDrawdownDebitAccountAdvice, ServiceMessage
+//
 // If LocalInstrument = SequenceBCoverPaymentStructured, Charges, InstructedAmount & ExchangeRate are not permitted.
 // Certain {7xxx} tags & {8xxx} tags may not be permitted depending upon value of LocalInstrument.
 func (fwm *FEDWireMessage) checkProhibitedCustomerTransferPlusTags() error {
@@ -753,9 +756,10 @@ func (fwm *FEDWireMessage) validateServiceMessage() error {
 
 // checkProhibitedServiceMessageTags ensures there are no tags present in the message that are incompatible with the BFCServiceMessage code
 // Tags NOT permitted:
-//   BusinessFunctionCode.TransactionTypeCode, LocalInstrument, PaymentNotification, Charges, InstructedAmount, ExchangeRate,
-//   Beneficiary Code = SWIFTBICORBEIANDAccountNumber, Originator Code = SWIFTBICORBEIANDAccountNumber, OriginatorOptionF,
-//   any {7xxx} tag, any {8xxx} tag
+//
+//	BusinessFunctionCode.TransactionTypeCode, LocalInstrument, PaymentNotification, Charges, InstructedAmount, ExchangeRate,
+//	Beneficiary Code = SWIFTBICORBEIANDAccountNumber, Originator Code = SWIFTBICORBEIANDAccountNumber, OriginatorOptionF,
+//	any {7xxx} tag, any {8xxx} tag
 func (fwm *FEDWireMessage) checkProhibitedServiceMessageTags() error {
 	// BusinessFunctionCode.TransactionTypeCode (Element 02) is invalid
 	if fwm.BusinessFunctionCode != nil {
@@ -1162,14 +1166,14 @@ func (fwm *FEDWireMessage) validateFIPaymentMethodToBeneficiary() error {
 }
 
 // validateUnstructuredAddenda validates TagUnstructuredAddenda within a FEDWireMessage
-// * Must be present if BusinessFunctionCode is CustomerTransferPlus and LocalInstrument is ANSIX12format,
-//    GeneralXMLformat, ISO20022XMLformat, NarrativeText, STP820format, SWIFTfield70 or UNEDIFACTformat;
-//    otherwise not permitted.
-// * If LocalInstrument is ANSIX12format or STP820format, only the X12 Character Set* is permitted in
-//    Addenda Information element.
-// * If LocalInstrument is GeneralXMLformat, ISO20022XMLformat, NarrativeText, SWIFTfield70 or
-//    UNEDIFACTformat, only the SWIFT MX ISO 20022 Character Set* is permitted in Addenda Information
-//    element.
+//   - Must be present if BusinessFunctionCode is CustomerTransferPlus and LocalInstrument is ANSIX12format,
+//     GeneralXMLformat, ISO20022XMLformat, NarrativeText, STP820format, SWIFTfield70 or UNEDIFACTformat;
+//     otherwise not permitted.
+//   - If LocalInstrument is ANSIX12format or STP820format, only the X12 Character Set* is permitted in
+//     Addenda Information element.
+//   - If LocalInstrument is GeneralXMLformat, ISO20022XMLformat, NarrativeText, SWIFTfield70 or
+//     UNEDIFACTformat, only the SWIFT MX ISO 20022 Character Set* is permitted in Addenda Information
+//     element.
 func (fwm *FEDWireMessage) validateUnstructuredAddenda() error {
 	if fwm.BusinessFunctionCode.BusinessFunctionCode == CustomerTransferPlus && fwm.LocalInstrument != nil {
 		switch fwm.LocalInstrument.LocalInstrumentCode {
@@ -1177,6 +1181,8 @@ func (fwm *FEDWireMessage) validateUnstructuredAddenda() error {
 			if fwm.UnstructuredAddenda == nil {
 				return fieldError("UnstructuredAddenda", ErrFieldRequired)
 			}
+		case SequenceBCoverPaymentStructured:
+		// optional - no need to check for anything.
 		default:
 			if fwm.UnstructuredAddenda != nil {
 				return NewErrInvalidPropertyForProperty("UnstructuredAddenda", fwm.UnstructuredAddenda.String(),
@@ -1184,7 +1190,8 @@ func (fwm *FEDWireMessage) validateUnstructuredAddenda() error {
 			}
 		}
 	} else {
-		if fwm.UnstructuredAddenda != nil {
+		// optional for bank transfer, so do not fail if present.
+		if fwm.BusinessFunctionCode.BusinessFunctionCode != BankTransfer && fwm.UnstructuredAddenda != nil {
 			return fieldError("UnstructuredAddenda", ErrNotPermitted)
 		}
 	}
@@ -1197,7 +1204,8 @@ func (fwm *FEDWireMessage) validateUnstructuredAddenda() error {
 
 // validateRelatedRemittance validates TagRelatedRemittance within a FEDWireMessage
 // Must be present if BusinessFunctionCode is CustomerTransferPlus and LocalInstrument is
-//  RelatedRemittanceInformation; otherwise not permitted.
+//
+//	RelatedRemittanceInformation; otherwise not permitted.
 func (fwm *FEDWireMessage) validateRelatedRemittance() error {
 	if fwm.BusinessFunctionCode.BusinessFunctionCode == CustomerTransferPlus && fwm.LocalInstrument != nil &&
 		fwm.LocalInstrument.LocalInstrumentCode == RelatedRemittanceInformation {
@@ -1215,7 +1223,8 @@ func (fwm *FEDWireMessage) validateRelatedRemittance() error {
 
 // validateRemittanceOriginator validates TagRemittanceOriginator within a FEDWireMessage
 // Must be present if BusinessFunctionCode is CustomerTransferPlus and LocalInstrument code
-//  is RemittanceInformationStructured; otherwise not permitted.
+//
+//	is RemittanceInformationStructured; otherwise not permitted.
 func (fwm *FEDWireMessage) validateRemittanceOriginator() error {
 	if fwm.BusinessFunctionCode.BusinessFunctionCode == CustomerTransferPlus && fwm.LocalInstrument != nil &&
 		fwm.LocalInstrument.LocalInstrumentCode == RemittanceInformationStructured {
@@ -1233,7 +1242,8 @@ func (fwm *FEDWireMessage) validateRemittanceOriginator() error {
 
 // validateRemittanceBeneficiary validates TagRemittanceBeneficiary within a FEDWireMessage
 // Must be present if BusinessFunctionCode is CustomerTransferPlus and LocalInstrument code
-//  is RemittanceInformationStructured; otherwise not permitted.
+//
+//	is RemittanceInformationStructured; otherwise not permitted.
 func (fwm *FEDWireMessage) validateRemittanceBeneficiary() error {
 	if fwm.BusinessFunctionCode.BusinessFunctionCode == CustomerTransferPlus && fwm.LocalInstrument != nil &&
 		fwm.LocalInstrument.LocalInstrumentCode == RemittanceInformationStructured {
@@ -1251,7 +1261,8 @@ func (fwm *FEDWireMessage) validateRemittanceBeneficiary() error {
 
 // PrimaryRemittanceDocument validates TagPrimaryRemittanceDocument within a FEDWireMessage
 // Must be present if BusinessFunctionCode is CustomerTransferPlus and LocalInstrument code
-//  is RemittanceInformationStructured; otherwise not permitted.
+//
+//	is RemittanceInformationStructured; otherwise not permitted.
 func (fwm *FEDWireMessage) validatePrimaryRemittanceDocument() error {
 	if fwm.BusinessFunctionCode.BusinessFunctionCode == CustomerTransferPlus && fwm.LocalInstrument != nil &&
 		fwm.LocalInstrument.LocalInstrumentCode == RemittanceInformationStructured {
@@ -1269,7 +1280,8 @@ func (fwm *FEDWireMessage) validatePrimaryRemittanceDocument() error {
 
 // validateActualAmountPaid validates TagActualAmountPaid within a FEDWireMessage
 // Must be present if BusinessFunctionCode is CustomerTransferPlus and LocalInstrument code
-//  is RemittanceInformationStructured; otherwise not permitted.
+//
+//	is RemittanceInformationStructured; otherwise not permitted.
 func (fwm *FEDWireMessage) validateActualAmountPaid() error {
 	if fwm.BusinessFunctionCode.BusinessFunctionCode == CustomerTransferPlus && fwm.LocalInstrument != nil &&
 		fwm.LocalInstrument.LocalInstrumentCode == RemittanceInformationStructured {
@@ -1287,7 +1299,8 @@ func (fwm *FEDWireMessage) validateActualAmountPaid() error {
 
 // validateGrossAmountRemittanceDocument validates TagGrossAmountRemittanceDocument within a FEDWireMessage
 // Must be present if BusinessFunctionCode is CustomerTransferPlus and LocalInstrument code
-//  is RemittanceInformationStructured; otherwise not permitted.
+//
+//	is RemittanceInformationStructured; otherwise not permitted.
 func (fwm *FEDWireMessage) validateGrossAmountRemittanceDocument() error {
 	if fwm.BusinessFunctionCode.BusinessFunctionCode == CustomerTransferPlus && fwm.LocalInstrument != nil &&
 		fwm.LocalInstrument.LocalInstrumentCode == RemittanceInformationStructured {
@@ -1305,7 +1318,8 @@ func (fwm *FEDWireMessage) validateGrossAmountRemittanceDocument() error {
 
 // validateAdjustment validates TagAdjustment within a FEDWireMessage
 // Must be present if BusinessFunctionCode is CustomerTransferPlus and LocalInstrument code
-//  is RemittanceInformationStructured; otherwise not permitted.
+//
+//	is RemittanceInformationStructured; otherwise not permitted.
 func (fwm *FEDWireMessage) validateAdjustment() error {
 	if fwm.BusinessFunctionCode.BusinessFunctionCode == CustomerTransferPlus && fwm.LocalInstrument != nil &&
 		fwm.LocalInstrument.LocalInstrumentCode == RemittanceInformationStructured {
@@ -1323,7 +1337,8 @@ func (fwm *FEDWireMessage) validateAdjustment() error {
 
 // validateDateRemittanceDocument validates TagDateRemittanceDocument within a FEDWireMessage
 // Must be present if BusinessFunctionCode is CustomerTransferPlus and LocalInstrument code
-//  is RemittanceInformationStructured; otherwise not permitted.
+//
+//	is RemittanceInformationStructured; otherwise not permitted.
 func (fwm *FEDWireMessage) validateDateRemittanceDocument() error {
 	if fwm.BusinessFunctionCode.BusinessFunctionCode == CustomerTransferPlus && fwm.LocalInstrument != nil &&
 		fwm.LocalInstrument.LocalInstrumentCode == RemittanceInformationStructured {
@@ -1341,7 +1356,8 @@ func (fwm *FEDWireMessage) validateDateRemittanceDocument() error {
 
 // validateSecondaryRemittanceDocument validates a TagSecondaryRemittanceDocument within a FEDWireMessage
 // Must be present if BusinessFunctionCode is CustomerTransferPlus and LocalInstrument code
-//  is RemittanceInformationStructured; otherwise not permitted.
+//
+//	is RemittanceInformationStructured; otherwise not permitted.
 func (fwm *FEDWireMessage) validateSecondaryRemittanceDocument() error {
 	if fwm.BusinessFunctionCode.BusinessFunctionCode == CustomerTransferPlus && fwm.LocalInstrument != nil &&
 		fwm.LocalInstrument.LocalInstrumentCode == RemittanceInformationStructured {
@@ -1359,7 +1375,8 @@ func (fwm *FEDWireMessage) validateSecondaryRemittanceDocument() error {
 
 // validateRemittanceFreeText validates a TagRemittanceFreeText within a FEDWireMessage
 // Must be present if BusinessFunctionCode is CustomerTransferPlus and LocalInstrument code
-//  is RemittanceInformationStructured; otherwise not permitted.
+//
+//	is RemittanceInformationStructured; otherwise not permitted.
 func (fwm *FEDWireMessage) validateRemittanceFreeText() error {
 	if fwm.BusinessFunctionCode.BusinessFunctionCode == CustomerTransferPlus && fwm.LocalInstrument != nil &&
 		fwm.LocalInstrument.LocalInstrumentCode == RemittanceInformationStructured {

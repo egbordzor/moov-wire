@@ -27,6 +27,8 @@ func TestRead(t *testing.T) {
 	t.Run("CustomerTransferPlusUnstructuredAddenda", testRead(filepath.Join("test", "testdata", "fedWireMessage-CustomerTransferPlusUnstructuredAddenda.txt")))
 	t.Run("CustomerTransferPlusStructuredRemittance", testRead(filepath.Join("test", "testdata", "fedWireMessage-CustomerTransferPlusStructuredRemittance.txt")))
 	t.Run("Reject", testRead(filepath.Join("test", "testdata", "fedWireMessage-Reject.txt")))
+	t.Run("Unstructured Transfer", testRead(filepath.Join("test", "testdata", "fedWireMessage-UnstructuredAddenda.txt")))
+	t.Run("COVS Unstructured Transfer", testRead(filepath.Join("test", "testdata", "fedWireMessage-CustomerTransferPlusCOVSUnstructuredAddenda.txt")))
 }
 
 func testRead(filePathName string) func(t *testing.T) {
