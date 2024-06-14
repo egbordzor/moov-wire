@@ -303,7 +303,7 @@ func TestFEDWireMessage_validateUnstructuredAddenda(t *testing.T) {
 	fwm := mockCustomerTransferData()
 	fwm.BusinessFunctionCode.BusinessFunctionCode = CustomerTransferPlus
 	li := NewLocalInstrument()
-	li.LocalInstrumentCode = SequenceBCoverPaymentStructured
+	li.LocalInstrumentCode = ProprietaryLocalInstrumentCode
 	fwm.LocalInstrument = li
 	fwm.UnstructuredAddenda = mockUnstructuredAddenda()
 
@@ -313,6 +313,20 @@ func TestFEDWireMessage_validateUnstructuredAddenda(t *testing.T) {
 	expected := NewErrInvalidPropertyForProperty("UnstructuredAddenda", fwm.UnstructuredAddenda.String(),
 		"LocalInstrumentCode", fwm.LocalInstrument.LocalInstrumentCode).Error()
 	require.EqualError(t, err, expected)
+}
+
+func TestFEDWireMessage_validateUnstructuredAddendaCOVS(t *testing.T) {
+	fwm := mockCustomerTransferData()
+	fwm.BusinessFunctionCode.BusinessFunctionCode = CustomerTransferPlus
+	li := NewLocalInstrument()
+	li.LocalInstrumentCode = SequenceBCoverPaymentStructured
+	fwm.LocalInstrument = li
+	fwm.UnstructuredAddenda = mockUnstructuredAddenda()
+
+	// UnstructuredAddenda Invalid Property
+	err := fwm.validateUnstructuredAddenda()
+
+	require.NoError(t, err)
 }
 
 func TestFEDWireMessage_validateRelatedRemittance(t *testing.T) {
@@ -669,8 +683,8 @@ func TestInvalidServiceMessageForBankTransfer(t *testing.T) {
 	require.EqualError(t, err, expected)
 }
 
-// TestInvalidUnstructuredAddendaForBankTransfer test an invalid UnstructuredAddenda
-func TestInvalidUnstructuredAddendaForBankTransfer(t *testing.T) {
+// TestValidUnstructuredAddendaForBankTransfer test an invalid UnstructuredAddenda
+func TestValidUnstructuredAddendaForBankTransfer(t *testing.T) {
 	fwm := new(FEDWireMessage)
 	bfc := mockBusinessFunctionCode()
 	bfc.BusinessFunctionCode = BankTransfer
@@ -679,8 +693,7 @@ func TestInvalidUnstructuredAddendaForBankTransfer(t *testing.T) {
 
 	err := fwm.checkProhibitedBankTransferTags()
 
-	expected := fieldError("UnstructuredAddenda", ErrInvalidProperty, fwm.UnstructuredAddenda).Error()
-	require.EqualError(t, err, expected)
+	require.NoError(t, err)
 }
 
 // TestInvalidCurrencyInstructedAmountForBankTransfer test an invalid CurrencyInstructedAmount
