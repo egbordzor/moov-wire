@@ -92,6 +92,9 @@ func (ob *OriginatorToBeneficiary) Validate() error {
 	if ob.tag != TagOriginatorToBeneficiary {
 		return fieldError("tag", ErrValidTagForType, ob.tag)
 	}
+	if len(ob.LineOne) == 0 {
+		return fieldError("LineOne", NewFieldWrongMinLengthErr(1, len(ob.LineOne)), ob.LineOne)
+	}
 	if err := ob.isAlphanumeric(ob.LineOne); err != nil {
 		return fieldError("LineOne", err, ob.LineOne)
 	}

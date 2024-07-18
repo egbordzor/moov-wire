@@ -207,22 +207,22 @@ func (e ErrInvalidPropertyForProperty) Error() string {
 	return e.Message
 }
 
-// FieldWrongLengthErr is the error given when a Field is the wrong length
-type FieldWrongLengthErr struct {
+// FieldWrongMinLengthErr is the error given when a Field is the wrong length
+type FieldWrongMinLengthErr struct {
 	Message     string
 	FieldLength int
 	Length      int
 }
 
-// NewFieldWrongLengthErr creates a new error of the FieldWrongLengthErr type
-func NewFieldWrongLengthErr(FieldLength, length int) FieldWrongLengthErr {
-	return FieldWrongLengthErr{
-		Message:     fmt.Sprintf("must be %d characters and found %d", FieldLength, length),
+// NewFieldWrongMinLengthErr creates a new error of the FieldWrongLengthErr type
+func NewFieldWrongMinLengthErr(FieldLength, length int) FieldWrongMinLengthErr {
+	return FieldWrongMinLengthErr{
+		Message:     fmt.Sprintf("must be %d characters or more and found %d", FieldLength, length),
 		FieldLength: FieldLength,
 		Length:      length,
 	}
 }
 
-func (e FieldWrongLengthErr) Error() string {
+func (e FieldWrongMinLengthErr) Error() string {
 	return e.Message
 }
