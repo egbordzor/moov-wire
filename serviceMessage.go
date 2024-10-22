@@ -65,6 +65,7 @@ func (sm *ServiceMessage) AllLines() []*string {
 		&sm.LineNine,
 		&sm.LineTen,
 		&sm.LineEleven,
+		&sm.LineTwelve,
 	}
 }
 
